@@ -17,6 +17,7 @@ import oracledb.SQLCore;
  */
 public class RegisterDialog extends javax.swing.JDialog {
 
+    
     /**
      * Creates new form RegisterDialog
      */
@@ -26,7 +27,6 @@ public class RegisterDialog extends javax.swing.JDialog {
         this.setLocationRelativeTo(null);
         this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
     }
-
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always

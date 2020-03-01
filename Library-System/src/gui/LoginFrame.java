@@ -16,7 +16,7 @@ import javax.swing.JOptionPane;
  * @author aevan
  */
 public class LoginFrame extends javax.swing.JFrame {
-
+    LoginFrame thisInstance = this;
     /**
      * Creates new form LoginFrame
      */
@@ -235,6 +235,18 @@ public class LoginFrame extends javax.swing.JFrame {
         else{
             JOptionPane.showMessageDialog(this, "ERP", "not noice!", JOptionPane.INFORMATION_MESSAGE);
         }
+        
+        PatronFrame patronWindow = new PatronFrame(theUser);
+        patronWindow.setVisible(true);
+        
+        this.setVisible(false);
+        
+        patronWindow.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent e) {
+                thisInstance.setVisible(true);
+            }
+        });
     }//GEN-LAST:event_loginBtnActionPerformed
 
     private void registerBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_registerBtnActionPerformed
@@ -243,14 +255,14 @@ public class LoginFrame extends javax.swing.JFrame {
         regDialog.addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
             public void windowClosing(java.awt.event.WindowEvent e) {
-                System.exit(0);
+                
             }
         });
     }//GEN-LAST:event_registerBtnActionPerformed
 
     private void passFldKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_passFldKeyPressed
         if(evt.getKeyChar() == '\n'){
-            JOptionPane.showMessageDialog(this, "To be added!", "Unsupported",JOptionPane.INFORMATION_MESSAGE);
+            loginBtn.doClick();
         }
     }//GEN-LAST:event_passFldKeyPressed
 

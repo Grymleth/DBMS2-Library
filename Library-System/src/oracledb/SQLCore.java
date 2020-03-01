@@ -24,13 +24,14 @@ import javax.swing.JOptionPane;
 public class SQLCore extends SQLDriver {
     
     public static void insertUser(LibUser person, String password){
-        String statement = String.format("call add_user('%s','%s','%s','%s','%s','%c')", 
+        String statement = String.format("call add_user('%s','%s','%s','%s','%s','%c','%d')", 
                 person.loginid, 
                 person.fName, 
                 person.lName, 
                 password, 
                 person.address,
-                person.librarian);
+                person.librarian,
+                person.fines);
         System.out.println(statement);
         
         try(Connection con = DriverManager.getConnection(CONNECTION_URL, USER, PASS);
