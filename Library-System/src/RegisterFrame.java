@@ -2,6 +2,7 @@
 import Custom.LibUser;
 import java.awt.Frame;
 import javax.swing.JOptionPane;
+import javax.swing.JTextField;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -280,13 +281,24 @@ public class RegisterFrame extends javax.swing.JFrame {
     private void regBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_regBtnActionPerformed
         char librarian = librarianCheck.isSelected() ? 'Y' : 'N';
         
-        LibUser user = new LibUser(userFld.getText(), 
-                new String(passFld.getPassword()),
+        try{
+            if(emptyFields(userFld, fNameFld, lNameFld, addressFld)){
+                throw new Exception("Empty Fields!");
+            }
+        }
+        catch(Exception e){
+            JOptionPane.showMessageDialog(this,
+                    "Some fields are empty",
+                    "Empty Fields",
+                    JOptionPane.ERROR_MESSAGE);
+        }
+        
+        LibUser user = new LibUser(userFld.getText(),
                 fNameFld.getText(), lNameFld.getText(),
                 addressFld.getText(),
                 librarian);
         
-        SQLCore.insertUser(user);
+        SQLCore.insertUser(user, new String(passFld.getPassword()));
     }//GEN-LAST:event_regBtnActionPerformed
 
     private void confirmPassFldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_confirmPassFldActionPerformed
@@ -326,6 +338,16 @@ public class RegisterFrame extends javax.swing.JFrame {
                 new RegisterFrame().setVisible(true);
             }
         });
+    }
+    
+    public boolean emptyFields(JTextField ... flds){
+        for(JTextField item: flds){
+            if(item.getText().isEmpty()){
+                return true;
+            }
+        }
+        
+        return false;
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

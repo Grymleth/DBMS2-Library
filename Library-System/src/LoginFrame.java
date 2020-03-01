@@ -1,4 +1,5 @@
 
+import Custom.LibUser;
 import java.awt.Frame;
 import javax.swing.JOptionPane;
 
@@ -198,7 +199,18 @@ public class LoginFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_exitBtnMouseClicked
 
     private void loginBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginBtnActionPerformed
-        JOptionPane.showMessageDialog(this, "To be added!", "Unsupported",JOptionPane.INFORMATION_MESSAGE);
+        String username = userFld.getText();
+        String password = new String(passFld.getPassword());
+        
+        LibUser theUser;
+        theUser = SQLCore.authenticateUser(username, password);
+        if(theUser != null){
+            JOptionPane.showMessageDialog(this, "Login Successful", "Noice!", JOptionPane.INFORMATION_MESSAGE);
+            printUser(theUser);
+        }
+        else{
+            JOptionPane.showMessageDialog(this, "ERP", "not noice!", JOptionPane.INFORMATION_MESSAGE);
+        }
     }//GEN-LAST:event_loginBtnActionPerformed
 
     private void registerBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_registerBtnActionPerformed
@@ -248,6 +260,17 @@ public class LoginFrame extends javax.swing.JFrame {
                 new LoginFrame().setVisible(true);
             }
         });
+    }
+    
+    public static void printUser(LibUser user){
+        System.out.printf("%d, %s, %s, %s, %s, %c, %d\n",
+                user.userId,
+                user.loginid,
+                user.fName,
+                user.lName,
+                user.address,
+                user.librarian,
+                user.fines);
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
