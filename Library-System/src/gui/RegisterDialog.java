@@ -1,28 +1,30 @@
-
-import Custom.LibUser;
-import java.awt.Frame;
-import javax.swing.JOptionPane;
-import javax.swing.JTextField;
-
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+package gui;
+
+import customclass.LibUser;
+import java.awt.Frame;
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
+import oracledb.SQLCore;
 
 /**
  *
  * @author aevan
  */
-public class RegisterFrame extends javax.swing.JFrame {
+public class RegisterDialog extends javax.swing.JDialog {
 
     /**
-     * Creates new form RegisterFrame
+     * Creates new form RegisterDialog
      */
-    public RegisterFrame() {
+    public RegisterDialog(java.awt.Frame parent, boolean modal) {
+        super(parent, modal);
         initComponents();
         this.setLocationRelativeTo(null);
-        this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+        this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
     }
 
     /**
@@ -34,11 +36,7 @@ public class RegisterFrame extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        userFld2 = new javax.swing.JTextField();
-        titlePane = new javax.swing.JPanel();
-        exitBtn = new javax.swing.JLabel();
-        miniBtn = new javax.swing.JLabel();
-        titleLbl = new javax.swing.JLabel();
+        registerPane = new javax.swing.JPanel();
         contentPane = new javax.swing.JPanel();
         userLbl = new javax.swing.JLabel();
         passLbl = new javax.swing.JLabel();
@@ -55,42 +53,12 @@ public class RegisterFrame extends javax.swing.JFrame {
         fNameFld = new javax.swing.JTextField();
         addressFld = new javax.swing.JTextField();
         lNameFld = new javax.swing.JTextField();
+        titlePane = new javax.swing.JPanel();
+        exitBtn = new javax.swing.JLabel();
+        titleLbl = new javax.swing.JLabel();
 
-        userFld2.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setUndecorated(true);
-
-        titlePane.setBackground(new java.awt.Color(18, 203, 196));
-        titlePane.setLayout(null);
-
-        exitBtn.setFont(new java.awt.Font("Tahoma", 1, 36)); // NOI18N
-        exitBtn.setForeground(new java.awt.Color(255, 255, 255));
-        exitBtn.setText("X");
-        exitBtn.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                exitBtnMouseClicked(evt);
-            }
-        });
-        titlePane.add(exitBtn);
-        exitBtn.setBounds(427, 13, 25, 44);
-
-        miniBtn.setFont(new java.awt.Font("Tahoma", 1, 36)); // NOI18N
-        miniBtn.setForeground(new java.awt.Color(255, 255, 255));
-        miniBtn.setText("-");
-        miniBtn.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                miniBtnMouseClicked(evt);
-            }
-        });
-        titlePane.add(miniBtn);
-        miniBtn.setBounds(393, 13, 16, 44);
-
-        titleLbl.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
-        titleLbl.setForeground(new java.awt.Color(255, 255, 255));
-        titleLbl.setText("Register");
-        titlePane.add(titleLbl);
-        titleLbl.setBounds(20, 10, 99, 44);
 
         contentPane.setBackground(new java.awt.Color(196, 229, 56));
 
@@ -244,43 +212,72 @@ public class RegisterFrame extends javax.swing.JFrame {
                 .addGap(55, 55, 55))
         );
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        titlePane.setBackground(new java.awt.Color(18, 203, 196));
+        titlePane.setLayout(null);
+
+        exitBtn.setFont(new java.awt.Font("Tahoma", 1, 36)); // NOI18N
+        exitBtn.setForeground(new java.awt.Color(255, 255, 255));
+        exitBtn.setText("X");
+        exitBtn.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                exitBtnMouseClicked(evt);
+            }
+        });
+        titlePane.add(exitBtn);
+        exitBtn.setBounds(427, 13, 25, 44);
+
+        titleLbl.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
+        titleLbl.setForeground(new java.awt.Color(255, 255, 255));
+        titleLbl.setText("Register");
+        titlePane.add(titleLbl);
+        titleLbl.setBounds(20, 10, 99, 44);
+
+        javax.swing.GroupLayout registerPaneLayout = new javax.swing.GroupLayout(registerPane);
+        registerPane.setLayout(registerPaneLayout);
+        registerPaneLayout.setHorizontalGroup(
+            registerPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(titlePane, javax.swing.GroupLayout.PREFERRED_SIZE, 480, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addComponent(contentPane, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
+        registerPaneLayout.setVerticalGroup(
+            registerPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(registerPaneLayout.createSequentialGroup()
                 .addComponent(titlePane, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0)
                 .addComponent(contentPane, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 480, Short.MAX_VALUE)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                    .addGap(0, 0, Short.MAX_VALUE)
+                    .addComponent(registerPane, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGap(0, 0, Short.MAX_VALUE)))
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 530, Short.MAX_VALUE)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                    .addGap(0, 0, Short.MAX_VALUE)
+                    .addComponent(registerPane, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGap(0, 0, Short.MAX_VALUE)))
+        );
+
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void exitBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_exitBtnMouseClicked
-        this.dispose();
-    }//GEN-LAST:event_exitBtnMouseClicked
-
-    private void miniBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_miniBtnMouseClicked
-        this.setState(Frame.ICONIFIED);
-    }//GEN-LAST:event_miniBtnMouseClicked
 
     private void passFldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_passFldActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_passFldActionPerformed
 
-    private void cancelBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelBtnActionPerformed
-        this.dispose();
-    }//GEN-LAST:event_cancelBtnActionPerformed
-
     private void regBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_regBtnActionPerformed
         char librarian = librarianCheck.isSelected() ? 'Y' : 'N';
-        
+
         try{
             if(emptyFields(userFld, fNameFld, lNameFld, addressFld)){
                 throw new Exception("Empty Fields!");
@@ -288,22 +285,30 @@ public class RegisterFrame extends javax.swing.JFrame {
         }
         catch(Exception e){
             JOptionPane.showMessageDialog(this,
-                    "Some fields are empty",
-                    "Empty Fields",
-                    JOptionPane.ERROR_MESSAGE);
+                "Some fields are empty",
+                "Empty Fields",
+                JOptionPane.ERROR_MESSAGE);
         }
-        
+
         LibUser user = new LibUser(userFld.getText(),
-                fNameFld.getText(), lNameFld.getText(),
-                addressFld.getText(),
-                librarian);
-        
+            fNameFld.getText(), lNameFld.getText(),
+            addressFld.getText(),
+            librarian);
+
         SQLCore.insertUser(user, new String(passFld.getPassword()));
     }//GEN-LAST:event_regBtnActionPerformed
+
+    private void cancelBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelBtnActionPerformed
+        this.dispose();
+    }//GEN-LAST:event_cancelBtnActionPerformed
 
     private void confirmPassFldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_confirmPassFldActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_confirmPassFldActionPerformed
+
+    private void exitBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_exitBtnMouseClicked
+        this.dispose();
+    }//GEN-LAST:event_exitBtnMouseClicked
 
     /**
      * @param args the command line arguments
@@ -322,24 +327,35 @@ public class RegisterFrame extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(RegisterFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(RegisterDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(RegisterFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(RegisterDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(RegisterFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(RegisterDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(RegisterFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(RegisterDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 
-        /* Create and display the form */
+        /* Create and display the dialog */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new RegisterFrame().setVisible(true);
+                RegisterDialog dialog = new RegisterDialog(new javax.swing.JFrame(), true);
+                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
+                    @Override
+                    public void windowClosing(java.awt.event.WindowEvent e) {
+                        System.exit(0);
+                    }
+                });
+                dialog.setVisible(true);
             }
         });
     }
-    
+    /**
+     * Method that checks whether text fields are empty or not
+     * @param flds JTextFields you want to check
+     * @return true if at least one text field is empty
+     */
     public boolean emptyFields(JTextField ... flds){
         for(JTextField item: flds){
             if(item.getText().isEmpty()){
@@ -363,14 +379,13 @@ public class RegisterFrame extends javax.swing.JFrame {
     private javax.swing.JTextField lNameFld;
     private javax.swing.JLabel lNameLbl;
     private javax.swing.JCheckBox librarianCheck;
-    private javax.swing.JLabel miniBtn;
     private javax.swing.JPasswordField passFld;
     private javax.swing.JLabel passLbl;
     private javax.swing.JButton regBtn;
+    private javax.swing.JPanel registerPane;
     private javax.swing.JLabel titleLbl;
     private javax.swing.JPanel titlePane;
     private javax.swing.JTextField userFld;
-    private javax.swing.JTextField userFld2;
     private javax.swing.JLabel userLbl;
     // End of variables declaration//GEN-END:variables
 }
