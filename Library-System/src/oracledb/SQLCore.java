@@ -24,7 +24,7 @@ import javax.swing.JOptionPane;
 public class SQLCore extends SQLDriver {
     
     public static void insertUser(LibUser person, String password){
-        String statement = String.format("call add_user('%s','%s','%s','%s','%s','%c','%d')", 
+        String statement = String.format("call add_user('%s','%s','%s','%s','%s','%c'   )", 
                 person.loginid, 
                 person.fName, 
                 person.lName, 
