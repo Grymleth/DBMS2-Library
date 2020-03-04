@@ -1,6 +1,9 @@
 package oracledb;
+import customclass.SearchBook;
+import customclass.SearchBookView;
 import gui.LoginFrame;
 import customclass.LibUser;
+import customclass.MyBook;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -107,6 +110,122 @@ public class SQLCore extends SQLDriver {
             JOptionPane.showMessageDialog(null, ex.getLocalizedMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
         }
         return null;
+    }
+    
+    public static ArrayList<SearchBook> getSearchBookView(){
+        ArrayList<SearchBook> bookList = new ArrayList<>();
+        
+        String statement = "SELECT b.title, a.author_name, b.isbn, b.copy_no, b.status, b.shelf_id "
+                + "FROM books b, authors a, book_author ba "
+                + "WHERE b.isbn = ba.book_isbn AND a.author_id = ba.author_id";
+        String isbn;
+        SearchBook bookObj;
+        String author;
+        try (Connection con = DriverManager.getConnection(CONNECTION_URL, USER, PASS);
+                PreparedStatement query = con.prepareStatement(statement);) {
+            ResultSet res = query.executeQuery();
+            while (res.next()) {
+                isbn = res.getString("isbn");
+                bookObj = SearchBookView.findIsbn(bookList, isbn);
+                if(bookObj == null){
+                    bookObj = new SearchBook(res.getString("title"),
+                                          res.getString("author_name"),
+                                          isbn,
+                                          res.getInt("shelf_id"));
+                    bookList.add(bookObj);
+                }
+                else{
+                    author = bookObj.findAuthor(res.getString("author_name"));
+                    if(author.equals("~")){
+                        bookObj.addAuthor(res.getString("author_name"));
+                        continue;
+                    }
+                    else{
+                        bookObj.addCopies(1);
+                    }
+                }
+                
+                switch(res.getString("status")){
+                    case "On Shelf":{
+                        bookObj.addOnShelf(1);
+                        break;
+                    }
+                    case "On Loan":{
+                        bookObj.addOnLoan(1);
+                        break;
+                    }
+                    case "On Hold":{
+                        bookObj.addOnHold(1);
+                        break;
+                    }
+                }
+            }
+        } catch (SQLException ex) {
+            System.out.println(ex.getLocalizedMessage());
+            JOptionPane.showMessageDialog(null, ex.getLocalizedMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
+        }
+        return bookList;
+    }
+    
+    public static void borrowBook(LibUser user, SearchBook book){
+        String statement = "{call borrow_book(?,?)}"; 
+        try(Connection con = DriverManager.getConnection(CONNECTION_URL, USER, PASS);
+                CallableStatement query = con.prepareCall(statement);
+                ){
+            query.setInt(1, user.userId);
+            query.setString(2, book.getIsbn());
+            query.execute();
+            
+        }catch(SQLException ex){
+            System.out.println(USER + " " + PASS);
+            System.out.println(ex.getLocalizedMessage());
+        }
+    }
+    
+    public static ArrayList<MyBook> getMyBookView(int userId){
+        ArrayList<MyBook> bookList = new ArrayList<>();
+        String author;
+        MyBook bookObj = null;
+        String statement = "SELECT b.title, a.author_name, b.isbn, b.copy_no, bt.transaction_date, b.status "
+                + "FROM books b, authors a, book_transactions bt, book_author ba, library_users u "
+                + "WHERE b.isbn = ba.book_isbn AND a.author_id = ba.author_id "
+                + "AND b.book_id = bt.book_id AND u.user_id = bt.user_id "
+                + "AND u.user_id = ?";
+        
+        try (Connection con = DriverManager.getConnection(CONNECTION_URL, USER, PASS);
+                PreparedStatement query = con.prepareStatement(statement);) {
+            query.setInt(1, userId);
+            ResultSet res = query.executeQuery();
+            
+            res.next();
+            bookObj = new MyBook(res.getString("title"),
+                                     res.getString("author_name"),
+                                     res.getString("isbn"),
+                                     res.getInt("copy_no"),
+                                     res.getDate("transaction_date"),
+                                     res.getString("status"));
+            do{
+                author = bookObj.findAuthor(res.getString("author_name"));
+                
+                if(author.equals("~")){
+                    bookObj.addAuthor(res.getString("author_name"));
+                }
+                else{
+                    bookObj = new MyBook(res.getString("title"),
+                                     res.getString("author_name"),
+                                     res.getString("isbn"),
+                                     res.getInt("copy_no"),
+                                     res.getDate("transaction_date"),
+                                     res.getString("status"));
+                    bookList.add(bookObj);
+                }
+            }
+            while(res.next());
+        } catch (SQLException ex) {
+            System.out.println(ex.getLocalizedMessage());
+            JOptionPane.showMessageDialog(null, ex.getLocalizedMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
+        }
+        return bookList;
     }
 }
     

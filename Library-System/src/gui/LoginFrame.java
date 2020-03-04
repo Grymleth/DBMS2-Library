@@ -234,6 +234,7 @@ public class LoginFrame extends javax.swing.JFrame {
         }
         else{
             JOptionPane.showMessageDialog(this, "ERP", "not noice!", JOptionPane.INFORMATION_MESSAGE);
+            return;
         }
         
         PatronFrame patronWindow = new PatronFrame(theUser);

@@ -1,14 +1,23 @@
 package gui;
 
 
+import customclass.SearchBook;
+import customclass.SearchBookView;
 import customclass.LibUser;
+import customclass.MyBook;
+import customclass.MyBookView;
 import java.awt.CardLayout;
 import java.awt.Component;
 import java.awt.event.WindowEvent;
+import java.util.ArrayList;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import static javax.swing.JOptionPane.OK_OPTION;
 import javax.swing.plaf.basic.BasicButtonUI;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
+import oracledb.SQLCore;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -22,6 +31,11 @@ import javax.swing.plaf.basic.BasicButtonUI;
  */
 public class PatronFrame extends javax.swing.JFrame {
     private LibUser user;
+    private SearchBookView searchBookList;
+    private MyBookView myBookList;
+    
+    private DefaultTableModel searchBooksModel;
+    private DefaultTableModel myBooksModel;
     /**
      * Creates new form PatronWindow
      */
@@ -35,12 +49,13 @@ public class PatronFrame extends javax.swing.JFrame {
     }
     
     public PatronFrame(LibUser user) {
-        initComponents();
-        setLocationRelativeTo(null);
-
-        greetingLbl.setText("Hello, "+ user.fName);
-        
-        cardLayout = (CardLayout)(panelCards.getLayout());
+        this();
+        System.out.println("awit");
+        System.out.println(user);
+        this.user = user;
+        initTableModels();
+        fillTables();
+        greetingLbl.setText("Hello, "+ this.user.fName);
     }
 
     /**
@@ -58,33 +73,24 @@ public class PatronFrame extends javax.swing.JFrame {
         sidePane = new javax.swing.JPanel();
         myBooksBtn = new javax.swing.JButton();
         searchBooksBtn = new javax.swing.JButton();
-        borrowBooksBtn = new javax.swing.JButton();
         aboutBtn = new javax.swing.JButton();
         logoutBtn = new javax.swing.JButton();
         greetingLbl = new javax.swing.JLabel();
         panelCards = new javax.swing.JPanel();
         myBooksPanelCard = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        myBooksTable = new javax.swing.JTable();
         jLabel2 = new javax.swing.JLabel();
         jButton11 = new javax.swing.JButton();
         searchBooksPanelCard = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jTable2 = new javax.swing.JTable();
+        searchBooksTable = new javax.swing.JTable();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         jTextField1 = new javax.swing.JTextField();
         jButton6 = new javax.swing.JButton();
         jButton7 = new javax.swing.JButton();
-        borrowBooksPanelCard = new javax.swing.JPanel();
-        jLabel5 = new javax.swing.JLabel();
-        jLabel6 = new javax.swing.JLabel();
-        jTextField2 = new javax.swing.JTextField();
-        jButton8 = new javax.swing.JButton();
-        jButton9 = new javax.swing.JButton();
-        jScrollPane4 = new javax.swing.JScrollPane();
-        jTable4 = new javax.swing.JTable();
-        jButton10 = new javax.swing.JButton();
+        borrowBtn = new javax.swing.JButton();
         historyPanelCard = new javax.swing.JPanel();
         jSpinner1 = new javax.swing.JSpinner();
 
@@ -117,17 +123,6 @@ public class PatronFrame extends javax.swing.JFrame {
         searchBooksBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 searchBooksBtnActionPerformed(evt);
-            }
-        });
-
-        borrowBooksBtn.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
-        borrowBooksBtn.setForeground(new java.awt.Color(255, 255, 255));
-        borrowBooksBtn.setText("Borrow Books");
-        borrowBooksBtn.setBorderPainted(false);
-        borrowBooksBtn.setContentAreaFilled(false);
-        borrowBooksBtn.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                borrowBooksBtnActionPerformed(evt);
             }
         });
 
@@ -168,14 +163,12 @@ public class PatronFrame extends javax.swing.JFrame {
                         .addGroup(sidePaneLayout.createSequentialGroup()
                             .addGroup(sidePaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                 .addComponent(myBooksBtn)
-                                .addComponent(searchBooksBtn))
+                                .addComponent(searchBooksBtn)
+                                .addComponent(aboutBtn))
                             .addContainerGap())
                         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, sidePaneLayout.createSequentialGroup()
-                            .addGroup(sidePaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                .addComponent(greetingLbl)
-                                .addGroup(sidePaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(borrowBooksBtn)
-                                    .addComponent(aboutBtn)))
+                            .addGap(17, 17, 17)
+                            .addComponent(greetingLbl)
                             .addGap(23, 23, 23)))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, sidePaneLayout.createSequentialGroup()
                         .addComponent(logoutBtn)
@@ -189,10 +182,8 @@ public class PatronFrame extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(searchBooksBtn)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(borrowBooksBtn)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(aboutBtn)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 250, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 282, Short.MAX_VALUE)
                 .addComponent(greetingLbl)
                 .addGap(18, 18, 18)
                 .addComponent(logoutBtn)
@@ -206,7 +197,7 @@ public class PatronFrame extends javax.swing.JFrame {
 
         myBooksPanelCard.setBackground(new java.awt.Color(196, 229, 56));
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        myBooksTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -216,8 +207,23 @@ public class PatronFrame extends javax.swing.JFrame {
             new String [] {
                 "Title", "Author", "ISBN", "Date Borrowed"
             }
-        ));
-        jScrollPane1.setViewportView(jTable1);
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        myBooksTable.getTableHeader().setReorderingAllowed(false);
+        jScrollPane1.setViewportView(myBooksTable);
+        if (myBooksTable.getColumnModel().getColumnCount() > 0) {
+            myBooksTable.getColumnModel().getColumn(0).setResizable(false);
+            myBooksTable.getColumnModel().getColumn(1).setResizable(false);
+            myBooksTable.getColumnModel().getColumn(2).setResizable(false);
+            myBooksTable.getColumnModel().getColumn(3).setResizable(false);
+        }
 
         jLabel2.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(255, 255, 255));
@@ -262,18 +268,37 @@ public class PatronFrame extends javax.swing.JFrame {
 
         searchBooksPanelCard.setBackground(new java.awt.Color(196, 229, 56));
 
-        jTable2.setModel(new javax.swing.table.DefaultTableModel(
+        searchBooksTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null}
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null}
             },
             new String [] {
-                "Title", "Author", "ISBN", "Available Copies", "IN", "OUT", "Reserved"
+                "Title", "Author", "ISBN", "Available Copies", "Shelf No.", "IN", "OUT", "Reserved"
             }
-        ));
-        jScrollPane2.setViewportView(jTable2);
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        searchBooksTable.getTableHeader().setReorderingAllowed(false);
+        jScrollPane2.setViewportView(searchBooksTable);
+        if (searchBooksTable.getColumnModel().getColumnCount() > 0) {
+            searchBooksTable.getColumnModel().getColumn(0).setResizable(false);
+            searchBooksTable.getColumnModel().getColumn(1).setResizable(false);
+            searchBooksTable.getColumnModel().getColumn(2).setResizable(false);
+            searchBooksTable.getColumnModel().getColumn(3).setResizable(false);
+            searchBooksTable.getColumnModel().getColumn(4).setResizable(false);
+            searchBooksTable.getColumnModel().getColumn(5).setResizable(false);
+            searchBooksTable.getColumnModel().getColumn(6).setResizable(false);
+            searchBooksTable.getColumnModel().getColumn(7).setResizable(false);
+        }
 
         jLabel3.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
         jLabel3.setForeground(new java.awt.Color(255, 255, 255));
@@ -302,23 +327,32 @@ public class PatronFrame extends javax.swing.JFrame {
             }
         });
 
+        borrowBtn.setText("Borrow");
+        borrowBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                borrowBtnActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout searchBooksPanelCardLayout = new javax.swing.GroupLayout(searchBooksPanelCard);
         searchBooksPanelCard.setLayout(searchBooksPanelCardLayout);
         searchBooksPanelCardLayout.setHorizontalGroup(
             searchBooksPanelCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(searchBooksPanelCardLayout.createSequentialGroup()
                 .addGap(24, 24, 24)
-                .addGroup(searchBooksPanelCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(searchBooksPanelCardLayout.createSequentialGroup()
-                        .addComponent(jLabel4)
-                        .addGap(18, 18, 18)
-                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 324, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(30, 30, 30)
-                        .addComponent(jButton6)
-                        .addGap(18, 18, 18)
-                        .addComponent(jButton7))
-                    .addComponent(jLabel3)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 865, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(searchBooksPanelCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(borrowBtn)
+                    .addGroup(searchBooksPanelCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(searchBooksPanelCardLayout.createSequentialGroup()
+                            .addComponent(jLabel4)
+                            .addGap(18, 18, 18)
+                            .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 324, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGap(30, 30, 30)
+                            .addComponent(jButton6)
+                            .addGap(18, 18, 18)
+                            .addComponent(jButton7))
+                        .addComponent(jLabel3)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 865, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(46, Short.MAX_VALUE))
         );
         searchBooksPanelCardLayout.setVerticalGroup(
@@ -332,102 +366,14 @@ public class PatronFrame extends javax.swing.JFrame {
                     .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jButton6)
                     .addComponent(jButton7))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 32, Short.MAX_VALUE)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(24, 24, 24))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 34, Short.MAX_VALUE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 393, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(borrowBtn)
+                .addGap(19, 19, 19))
         );
 
         panelCards.add(searchBooksPanelCard, "searchBooksCard");
-
-        borrowBooksPanelCard.setBackground(new java.awt.Color(196, 229, 56));
-
-        jLabel5.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
-        jLabel5.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel5.setText("Borrow Books");
-
-        jLabel6.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel6.setText("Enter Book Name:");
-
-        jTextField2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField2ActionPerformed(evt);
-            }
-        });
-
-        jButton8.setText("Search");
-        jButton8.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton8ActionPerformed(evt);
-            }
-        });
-
-        jButton9.setText("Clear");
-        jButton9.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton9ActionPerformed(evt);
-            }
-        });
-
-        jTable4.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null}
-            },
-            new String [] {
-                "Title", "Author", "ISBN", "Available Copies", "IN", "OUT", "Reserved"
-            }
-        ));
-        jScrollPane4.setViewportView(jTable4);
-
-        jButton10.setText("Borrow");
-        jButton10.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton10ActionPerformed(evt);
-            }
-        });
-
-        javax.swing.GroupLayout borrowBooksPanelCardLayout = new javax.swing.GroupLayout(borrowBooksPanelCard);
-        borrowBooksPanelCard.setLayout(borrowBooksPanelCardLayout);
-        borrowBooksPanelCardLayout.setHorizontalGroup(
-            borrowBooksPanelCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(borrowBooksPanelCardLayout.createSequentialGroup()
-                .addGap(24, 24, 24)
-                .addGroup(borrowBooksPanelCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jButton10)
-                    .addGroup(borrowBooksPanelCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(borrowBooksPanelCardLayout.createSequentialGroup()
-                            .addComponent(jLabel6)
-                            .addGap(18, 18, 18)
-                            .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 324, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGap(30, 30, 30)
-                            .addComponent(jButton8)
-                            .addGap(18, 18, 18)
-                            .addComponent(jButton9))
-                        .addComponent(jLabel5)
-                        .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 865, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(70, Short.MAX_VALUE))
-        );
-        borrowBooksPanelCardLayout.setVerticalGroup(
-            borrowBooksPanelCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(borrowBooksPanelCardLayout.createSequentialGroup()
-                .addGap(22, 22, 22)
-                .addComponent(jLabel5)
-                .addGap(18, 18, 18)
-                .addGroup(borrowBooksPanelCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel6)
-                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton8)
-                    .addComponent(jButton9))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 34, Short.MAX_VALUE)
-                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 387, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton10)
-                .addGap(36, 36, 36))
-        );
-
-        panelCards.add(borrowBooksPanelCard, "borrowBooksCard");
 
         historyPanelCard.setBackground(new java.awt.Color(196, 229, 56));
 
@@ -491,10 +437,6 @@ public class PatronFrame extends javax.swing.JFrame {
        cardLayout.show(panelCards,"myBooksCard");
     }//GEN-LAST:event_myBooksBtnActionPerformed
 
-    private void borrowBooksBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_borrowBooksBtnActionPerformed
-        cardLayout.show(panelCards,"borrowBooksCard");
-    }//GEN-LAST:event_borrowBooksBtnActionPerformed
-
     private void aboutBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aboutBtnActionPerformed
         cardLayout.show(panelCards,"historyCard");
     }//GEN-LAST:event_aboutBtnActionPerformed
@@ -521,30 +463,61 @@ public class PatronFrame extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton6ActionPerformed
 
-    private void jTextField2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField2ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField2ActionPerformed
-
-    private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton8ActionPerformed
-
-    private void jButton10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton10ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton10ActionPerformed
-
     private void jButton11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton11ActionPerformed
-        // TODO add your handling code here:
+        
     }//GEN-LAST:event_jButton11ActionPerformed
 
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
       jTextField1.setText("");
     }//GEN-LAST:event_jButton7ActionPerformed
 
-    private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
-        jTextField2.setText("");
-    }//GEN-LAST:event_jButton9ActionPerformed
-
+    private void borrowBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_borrowBtnActionPerformed
+        SearchBook selectedBook = searchBookList.getBook(searchBooksTable.getSelectedRow());
+        
+        int choice = JOptionPane.showConfirmDialog(this, 
+                "Are you sure you want to borrow this book?",
+                "Confirm", 
+                JOptionPane.YES_NO_OPTION);
+        if(choice == JOptionPane.YES_OPTION){
+            SQLCore.borrowBook(user, selectedBook);
+            JOptionPane.showMessageDialog(this, 
+                    "You have successfully borrowed " + selectedBook.getTitle(), 
+                    "Success", 
+                    JOptionPane.INFORMATION_MESSAGE);
+        }
+    }//GEN-LAST:event_borrowBtnActionPerformed
+    
+    public void initTableModels(){
+        
+        searchBooksModel = new BookTableModel();
+        searchBooksModel.setColumnIdentifiers(new String[] {"Title","Author","ISBN","Copies","Shelf No.","On Shelf","On Loan","On Hold"});
+        searchBooksTable.setModel(searchBooksModel);
+        
+        myBooksModel = new BookTableModel();
+        myBooksModel.setColumnIdentifiers(new String[] {"Title","Author","ISBN","Copy No.","Transaction Date", "Status"});
+        myBooksTable.setModel(myBooksModel);
+        
+    }
+    
+    public void fillTables(){
+        searchBookList = new SearchBookView();
+        searchBookList.fill();
+        
+        ArrayList<SearchBook> searchList = searchBookList.getBookList();
+        
+        for(SearchBook item: searchList){
+            searchBooksModel.addRow(item.toRow());
+        }
+        System.out.println(user.userId);
+        myBookList = new MyBookView(user.userId);
+        myBookList.fill();
+        ArrayList<MyBook> myList = myBookList.getBookList();
+        
+        for(MyBook item: myList){
+            myBooksModel.addRow(item.toRow());
+        }
+    }
+    
     /**
      * @param args the command line arguments
      */
@@ -580,42 +553,40 @@ public class PatronFrame extends javax.swing.JFrame {
             }
         });
     }
+    
+    public class BookTableModel extends DefaultTableModel{
+        @Override
+        public boolean isCellEditable(int rowIndex, int mColIndex){
+            return false;
+        }
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton aboutBtn;
-    private javax.swing.JButton borrowBooksBtn;
-    private javax.swing.JPanel borrowBooksPanelCard;
+    private javax.swing.JButton borrowBtn;
     private javax.swing.JLabel greetingLbl;
     private javax.swing.JPanel historyPanelCard;
-    private javax.swing.JButton jButton10;
     private javax.swing.JButton jButton11;
     private javax.swing.JButton jButton6;
     private javax.swing.JButton jButton7;
-    private javax.swing.JButton jButton8;
-    private javax.swing.JButton jButton9;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JSpinner jSpinner1;
     private javax.swing.JSplitPane jSplitPane2;
-    private javax.swing.JTable jTable1;
-    private javax.swing.JTable jTable2;
-    private javax.swing.JTable jTable4;
     private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
     private javax.swing.JButton logoutBtn;
     private javax.swing.JButton myBooksBtn;
     private javax.swing.JPanel myBooksPanelCard;
+    private javax.swing.JTable myBooksTable;
     private javax.swing.JPanel panelCards;
     private javax.swing.JPanel registerPane;
     private javax.swing.JButton searchBooksBtn;
     private javax.swing.JPanel searchBooksPanelCard;
+    private javax.swing.JTable searchBooksTable;
     private javax.swing.JPanel sidePane;
     // End of variables declaration//GEN-END:variables
 }
