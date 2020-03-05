@@ -129,7 +129,7 @@ END add_book_author;
 
 CREATE OR REPLACE PROCEDURE borrow_book (
     p_userid     library_users.user_id%TYPE,
-    p_bookid   books.book_id%TYPE,
+    p_bookid   books.book_id%TYPE
 ) IS
 
     v_copyno books.isbn%TYPE;
@@ -167,7 +167,7 @@ END borrow_book;
 
 CREATE OR REPLACE PROCEDURE return_book (
     p_userid     library_users.user_id%TYPE,
-    p_bookid   books.book_id%TYPE,
+    p_bookid   books.book_id%TYPE
 ) IS
 
     v_copyno books.isbn%TYPE;

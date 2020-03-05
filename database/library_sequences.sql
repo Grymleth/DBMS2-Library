@@ -17,3 +17,5 @@ CREATE SEQUENCE book_seq
     INCREMENT BY 1
     START WITH 1
     MINVALUE 0;
+    
+DROP sequence user_seq;
