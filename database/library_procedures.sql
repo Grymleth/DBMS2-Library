@@ -1,4 +1,4 @@
-CREATE OR REPLACE PROCEDURE add_user (
+    CREATE OR REPLACE PROCEDURE add_user (
     p_loginid     library_users.login_id%TYPE,
     p_fname       library_users.first_name%TYPE,
     p_lname       library_users.last_name%TYPE,
@@ -167,36 +167,20 @@ END borrow_book;
 
 CREATE OR REPLACE PROCEDURE return_book (
     p_userid     library_users.user_id%TYPE,
-    p_bookid   books.book_id%TYPE
+    p_isbn  books.isbn%TYPE,
+    p_copyno books.copy_no%type
 ) IS
-
-    v_copyno books.isbn%TYPE;
-    CURSOR c_book IS
-    SELECT
-        copy_no
-    FROM
-        books
-    WHERE
-        book_id = p_bookid
-        AND status = 'On Shelf';
-
+    v_bookid books.book_id%type;
 BEGIN
-    OPEN c_book;
-    FETCH c_book INTO v_copyno;
-    INSERT INTO book_transactions (
-        transaction_no,
-        user_id,
-        book_id,
-        transaction_date
-    ) VALUES (
-        book_transaction_seq.NEXTVAL,
-        p_userid,
-        p_bookid,
-        sysdate
-    );
+    SELECT book_id INTO v_bookid
+    FROM books
+    WHERE isbn = p_isbn AND copy_no = p_copyno;
+    
+    DELETE FROM book_transactions
+    WHERE book_id = v_bookid;
     
     UPDATE books 
-    SET status = 'On Loan'
-    WHERE book_id = p_bookid AND copy_no = v_copyno;
+    SET status = 'On Shelf'
+    WHERE book_id = v_bookid;
 
 END return_book;

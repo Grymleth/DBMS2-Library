@@ -223,9 +223,25 @@ public class SQLCore extends SQLDriver {
             while(res.next());
         } catch (SQLException ex) {
             System.out.println(ex.getLocalizedMessage());
-            JOptionPane.showMessageDialog(null, ex.getLocalizedMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
+            return null;
         }
         return bookList;
+    }
+    
+    public static void returnBook(LibUser user, MyBook book){
+        String statement = "{call return_book(?,?,?)}"; 
+        try(Connection con = DriverManager.getConnection(CONNECTION_URL, USER, PASS);
+                CallableStatement query = con.prepareCall(statement);
+                ){
+            query.setInt(1, user.userId);
+            query.setString(2, book.getIsbn());
+            query.setInt(3, book.getCopyNo());
+            query.execute();
+            
+        }catch(SQLException ex){
+            System.out.println(USER + " " + PASS);
+            System.out.println(ex.getLocalizedMessage());
+        }
     }
 }
     

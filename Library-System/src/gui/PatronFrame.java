@@ -53,8 +53,8 @@ public class PatronFrame extends javax.swing.JFrame {
         System.out.println("awit");
         System.out.println(user);
         this.user = user;
-        initTableModels();
-        fillTables();
+        
+        refreshTables();
         greetingLbl.setText("Hello, "+ this.user.fName);
     }
 
@@ -81,7 +81,7 @@ public class PatronFrame extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         myBooksTable = new javax.swing.JTable();
         jLabel2 = new javax.swing.JLabel();
-        jButton11 = new javax.swing.JButton();
+        returnBtn = new javax.swing.JButton();
         searchBooksPanelCard = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         searchBooksTable = new javax.swing.JTable();
@@ -229,10 +229,10 @@ public class PatronFrame extends javax.swing.JFrame {
         jLabel2.setForeground(new java.awt.Color(255, 255, 255));
         jLabel2.setText("My Books");
 
-        jButton11.setText("Return Book");
-        jButton11.addActionListener(new java.awt.event.ActionListener() {
+        returnBtn.setText("Return Book");
+        returnBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton11ActionPerformed(evt);
+                returnBtnActionPerformed(evt);
             }
         });
 
@@ -242,7 +242,7 @@ public class PatronFrame extends javax.swing.JFrame {
             myBooksPanelCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(myBooksPanelCardLayout.createSequentialGroup()
                 .addGroup(myBooksPanelCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jButton11)
+                    .addComponent(returnBtn)
                     .addGroup(myBooksPanelCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(myBooksPanelCardLayout.createSequentialGroup()
                             .addGap(106, 106, 106)
@@ -260,7 +260,7 @@ public class PatronFrame extends javax.swing.JFrame {
                 .addGap(27, 27, 27)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton11)
+                .addComponent(returnBtn)
                 .addGap(17, 17, 17))
         );
 
@@ -327,7 +327,7 @@ public class PatronFrame extends javax.swing.JFrame {
             }
         });
 
-        borrowBtn.setText("Borrow");
+        borrowBtn.setText("Borrow Book");
         borrowBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 borrowBtnActionPerformed(evt);
@@ -450,8 +450,6 @@ public class PatronFrame extends javax.swing.JFrame {
 
         if(x==OK_OPTION){
             this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
-        }else{
-            return;
         }
     }//GEN-LAST:event_logoutBtnActionPerformed
 
@@ -460,12 +458,26 @@ public class PatronFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextField1ActionPerformed
 
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
-        // TODO add your handling code here:
+
     }//GEN-LAST:event_jButton6ActionPerformed
 
-    private void jButton11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton11ActionPerformed
+    private void returnBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_returnBtnActionPerformed
+        MyBook selectedBook = myBookList.getBook(myBooksTable.getSelectedRow());
         
-    }//GEN-LAST:event_jButton11ActionPerformed
+        int choice = JOptionPane.showConfirmDialog(this, 
+                "Are you sure you want to return this book?",
+                "Confirm", 
+                JOptionPane.YES_NO_OPTION);
+        if(choice == JOptionPane.YES_OPTION){
+            SQLCore.returnBook(user, selectedBook);
+            JOptionPane.showMessageDialog(this, 
+                    "You have successfully borrowed " + selectedBook.getTitle(), 
+                    "Success", 
+                    JOptionPane.INFORMATION_MESSAGE);
+            
+            refreshTables();
+        }
+    }//GEN-LAST:event_returnBtnActionPerformed
 
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
       jTextField1.setText("");
@@ -484,11 +496,19 @@ public class PatronFrame extends javax.swing.JFrame {
                     "You have successfully borrowed " + selectedBook.getTitle(), 
                     "Success", 
                     JOptionPane.INFORMATION_MESSAGE);
+            
+            refreshTables();
         }
+        
+        
     }//GEN-LAST:event_borrowBtnActionPerformed
     
+    public void refreshTables(){
+        initTableModels();
+        fillTables();
+    }
+    
     public void initTableModels(){
-        
         searchBooksModel = new BookTableModel();
         searchBooksModel.setColumnIdentifiers(new String[] {"Title","Author","ISBN","Copies","Shelf No.","On Shelf","On Loan","On Hold"});
         searchBooksTable.setModel(searchBooksModel);
@@ -505,17 +525,24 @@ public class PatronFrame extends javax.swing.JFrame {
         
         ArrayList<SearchBook> searchList = searchBookList.getBookList();
         
-        for(SearchBook item: searchList){
-            searchBooksModel.addRow(item.toRow());
+        if(searchList != null){
+            for(SearchBook item: searchList){
+                searchBooksModel.addRow(item.toRow());
+            }
         }
+        
         System.out.println(user.userId);
         myBookList = new MyBookView(user.userId);
         myBookList.fill();
         ArrayList<MyBook> myList = myBookList.getBookList();
         
-        for(MyBook item: myList){
-            myBooksModel.addRow(item.toRow());
+        
+        if(myList != null){
+            for(MyBook item: myList){
+                myBooksModel.addRow(item.toRow());
+            }
         }
+        
     }
     
     /**
@@ -566,7 +593,6 @@ public class PatronFrame extends javax.swing.JFrame {
     private javax.swing.JButton borrowBtn;
     private javax.swing.JLabel greetingLbl;
     private javax.swing.JPanel historyPanelCard;
-    private javax.swing.JButton jButton11;
     private javax.swing.JButton jButton6;
     private javax.swing.JButton jButton7;
     private javax.swing.JLabel jLabel2;
@@ -584,6 +610,7 @@ public class PatronFrame extends javax.swing.JFrame {
     private javax.swing.JTable myBooksTable;
     private javax.swing.JPanel panelCards;
     private javax.swing.JPanel registerPane;
+    private javax.swing.JButton returnBtn;
     private javax.swing.JButton searchBooksBtn;
     private javax.swing.JPanel searchBooksPanelCard;
     private javax.swing.JTable searchBooksTable;

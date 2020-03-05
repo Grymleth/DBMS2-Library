@@ -46,10 +46,23 @@ public class SearchBookView {
         }
     }
     
+      public static SearchBook getBook(ArrayList<SearchBook> list, String title){
+         for(SearchBook item: list){
+            if(item.getTitle().equals(title)){
+                return item;
+            }
+        }
+        
+        return null;
+        
+    }
+    
     public static void main(String[] args) {
         SearchBookView lib = new SearchBookView();
         
         lib.fill();
         lib.printBooks();
     }
+    
+  
 }

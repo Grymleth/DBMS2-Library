@@ -251,7 +251,7 @@
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="0" attributes="0">
                               <Group type="103" groupAlignment="1" attributes="0">
-                                  <Component id="jButton11" min="-2" max="-2" attributes="0"/>
+                                  <Component id="returnBtn" min="-2" max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="0" attributes="0">
                                       <Group type="102" attributes="0">
                                           <EmptySpace min="-2" pref="106" max="-2" attributes="0"/>
@@ -275,7 +275,7 @@
                               <EmptySpace min="-2" pref="27" max="-2" attributes="0"/>
                               <Component id="jScrollPane1" min="-2" max="-2" attributes="0"/>
                               <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                              <Component id="jButton11" min="-2" max="-2" attributes="0"/>
+                              <Component id="returnBtn" min="-2" max="-2" attributes="0"/>
                               <EmptySpace min="-2" pref="17" max="-2" attributes="0"/>
                           </Group>
                       </Group>
@@ -341,12 +341,12 @@
                         <Property name="text" type="java.lang.String" value="My Books"/>
                       </Properties>
                     </Component>
-                    <Component class="javax.swing.JButton" name="jButton11">
+                    <Component class="javax.swing.JButton" name="returnBtn">
                       <Properties>
                         <Property name="text" type="java.lang.String" value="Return Book"/>
                       </Properties>
                       <Events>
-                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton11ActionPerformed"/>
+                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="returnBtnActionPerformed"/>
                       </Events>
                     </Component>
                   </SubComponents>
@@ -524,7 +524,7 @@
                     </Component>
                     <Component class="javax.swing.JButton" name="borrowBtn">
                       <Properties>
-                        <Property name="text" type="java.lang.String" value="Borrow"/>
+                        <Property name="text" type="java.lang.String" value="Borrow Book"/>
                       </Properties>
                       <Events>
                         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="borrowBtnActionPerformed"/>
