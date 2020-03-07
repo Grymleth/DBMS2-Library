@@ -14,7 +14,8 @@ BEGIN
         last_name,
         login_password,
         address,
-        librarian
+        librarian,
+        unpaid_fines
     ) VALUES (
         user_seq.NEXTVAL,
         p_loginid,
@@ -22,7 +23,8 @@ BEGIN
         p_lname,
         p_loginpass,
         p_address,
-        p_lib
+        p_lib,
+        0
     );
 
 END add_user;
@@ -129,22 +131,21 @@ END add_book_author;
 
 CREATE OR REPLACE PROCEDURE borrow_book (
     p_userid     library_users.user_id%TYPE,
-    p_bookid   books.book_id%TYPE
+    p_isbn     books.isbn%TYPE
 ) IS
-
-    v_copyno books.isbn%TYPE;
+    v_bookid books.book_id%TYPE;
     CURSOR c_book IS
     SELECT
-        copy_no
+        book_id
     FROM
         books
     WHERE
-        book_id = p_bookid
+        isbn = p_isbn
         AND status = 'On Shelf';
 
 BEGIN
     OPEN c_book;
-    FETCH c_book INTO v_copyno;
+    FETCH c_book INTO v_bookid;
     INSERT INTO book_transactions (
         transaction_no,
         user_id,
@@ -153,13 +154,13 @@ BEGIN
     ) VALUES (
         book_transaction_seq.NEXTVAL,
         p_userid,
-        p_bookid,
-        sysdate
+        v_bookid,
+        SYSDATE
     );
     
     UPDATE books 
-    SET status = 'On Loan'
-    WHERE book_id = p_bookid AND copy_no = v_copyno;
+    SET status = 'On Hold'
+    WHERE book_id = v_bookid;
 
 END borrow_book;
     
@@ -184,3 +185,52 @@ BEGIN
     WHERE book_id = v_bookid;
 
 END return_book;
+
+/
+
+CREATE OR REPLACE PROCEDURE delete_user (
+    p_userid library_users.user_id%TYPE
+) AS
+BEGIN
+    DELETE FROM library_users
+    WHERE
+        user_id = p_userid;
+
+END delete_user;
+
+/
+
+CREATE OR REPLACE PROCEDURE edit_user (
+    p_userid     library_users.user_id%TYPE,
+    p_fname      library_users.first_name%TYPE,
+    p_lname      library_users.last_name%TYPE,
+    p_address    library_users.address%TYPE,
+    p_loginid    library_users.login_id%TYPE,
+    p_librarian library_users.librarian%TYPE
+) IS 
+BEGIN 
+    UPDATE library_users
+    SET
+        first_name = p_fname,
+        last_name = p_lname,
+        address = p_address,
+        login_id = p_loginid,
+        librarian = p_librarian
+    WHERE
+        user_id = p_userid; 
+END edit_user;
+
+/
+
+CREATE OR REPLACE PROCEDURE accept_loan(
+    p_transno book_transactions.transaction_no%type)
+IS
+    v_bookid books.book_id%type;
+BEGIN
+    SELECT book_id INTO v_bookid FROM book_transactions
+    WHERE transaction_no = p_transno;
+    
+    UPDATE books 
+    SET status = 'On Loan'
+    WHERE book_id = v_bookid;
+END;

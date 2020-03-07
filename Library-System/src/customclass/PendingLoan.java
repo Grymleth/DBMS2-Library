@@ -13,24 +13,25 @@ import java.util.Iterator;
  *
  * @author aevan
  */
-public class MyBook {
-    private int bookId;
+public class PendingLoan {
+    private int transactionNo;
+    private String fullName;
     private String title;
     private ArrayList<String> authors;
     private String isbn;
     private int copyNo;
     private Date date;
-    private String status;
     
-    public MyBook(int bookId, String title, String author, String isbn, int copyNo, Date date, String status){
-        this.bookId = bookId;
+    public PendingLoan(int transactionNo, String fullName, String title, 
+            String author, String isbn, int copyNo, Date date){
+        authors = new ArrayList<>();
+        this.transactionNo = transactionNo;
+        this.fullName = fullName;
         this.title = title;
-        this.authors = new ArrayList<>();
         this.authors.add(author);
         this.isbn = isbn;
         this.copyNo = copyNo;
         this.date = date;
-        this.status = status;
     }
     
     @Override
@@ -44,17 +45,18 @@ public class MyBook {
             }
         }
         
-        return String.format("'%s','%s','%s',%d,%s,%s",
+        return String.format("%d, %s, %s, %s, %s, %d, %s",
+                transactionNo,
+                fullName,
                 title,
                 authorList,
                 isbn,
                 copyNo,
-                date.toString(),
-                status);
+                date.toString());
     }
     
     public String[] toRow(){
-        String[] arr = new String[6];
+        String[] arr = new String[7];
         String authorList = "";
         
         Iterator iter = authors.iterator();
@@ -64,31 +66,31 @@ public class MyBook {
                 authorList += ", ";
             }
         }
-       
-        arr[0] = title;
-        arr[1] = authorList;
-        arr[2] = isbn;
-        arr[3] = Integer.toString(copyNo);
-        arr[4] = date.toString();
-        arr[5] = status;
+        arr[0] = Integer.toString(transactionNo);
+        arr[1] = fullName;
+        arr[2] = title;
+        arr[3] = authorList;
+        arr[4] = isbn;
+        arr[5] = Integer.toString(copyNo);
+        arr[6] = date.toString();
         
         return arr;
     }
     
-    public int getId(){
-        return bookId;
+    public int getTransactionNo(){
+        return this.transactionNo;
     }
-   
+    
+    public String getFullName(){
+        return this.fullName;
+    }
+    
     public String getTitle(){
-        return title;
+        return this.title;
     }
     
-    public void setTitle(String title){
-        this.title = title;
-    }
-    
-    public ArrayList<String> getAuthor(){
-        return authors;
+    public ArrayList<String> getAuthors(){
+        return this.authors;
     }
     
     public void addAuthor(String author){
@@ -96,35 +98,15 @@ public class MyBook {
     }
     
     public String getIsbn(){
-        return isbn;
-    }
-    
-    public void setIsbn(String isbn){
-        this.isbn = isbn;
+        return this.isbn;
     }
     
     public int getCopyNo(){
-        return copyNo;
-    }
-    
-    public void setCopyNo(int copyNo){
-        this.copyNo = copyNo;
+        return this.copyNo;
     }
     
     public Date getDate(){
         return this.date;
-    }
-    
-    public void setDate(Date date){
-        this.date = date;
-    }
-    
-    public String getStatus(){
-        return this.status;
-    }
-    
-    public void setStatus(String status){
-        this.status = status;
     }
     
     public String findAuthor(String author){

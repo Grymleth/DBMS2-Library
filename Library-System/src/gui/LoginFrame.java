@@ -50,6 +50,7 @@ public class LoginFrame extends javax.swing.JFrame {
         passFld = new javax.swing.JPasswordField();
         loginBtn = new javax.swing.JButton();
         registerBtn = new javax.swing.JButton();
+        librarianCheck = new javax.swing.JCheckBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setUndecorated(true);
@@ -134,6 +135,10 @@ public class LoginFrame extends javax.swing.JFrame {
             }
         });
 
+        librarianCheck.setBackground(new java.awt.Color(196, 229, 56));
+        librarianCheck.setForeground(new java.awt.Color(255, 255, 255));
+        librarianCheck.setText("Login as Librarian?");
+
         javax.swing.GroupLayout contentPaneLayout = new javax.swing.GroupLayout(contentPane);
         contentPane.setLayout(contentPaneLayout);
         contentPaneLayout.setHorizontalGroup(
@@ -143,14 +148,16 @@ public class LoginFrame extends javax.swing.JFrame {
                 .addGroup(contentPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(userLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(passLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(19, 19, 19)
                 .addGroup(contentPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addGroup(contentPaneLayout.createSequentialGroup()
-                        .addComponent(registerBtn)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(loginBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(userFld, javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(passFld, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 258, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(librarianCheck)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 22, Short.MAX_VALUE)
+                        .addComponent(registerBtn))
+                    .addGroup(contentPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(loginBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(userFld)
+                        .addComponent(passFld, javax.swing.GroupLayout.DEFAULT_SIZE, 258, Short.MAX_VALUE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         contentPaneLayout.setVerticalGroup(
@@ -164,11 +171,13 @@ public class LoginFrame extends javax.swing.JFrame {
                 .addGroup(contentPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(passLbl)
                     .addComponent(passFld, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(48, 48, 48)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 33, Short.MAX_VALUE)
+                .addComponent(loginBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
                 .addGroup(contentPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(registerBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(loginBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(59, Short.MAX_VALUE))
+                    .addComponent(librarianCheck))
+                .addGap(20, 20, 20))
         );
 
         javax.swing.GroupLayout loginPaneLayout = new javax.swing.GroupLayout(loginPane);
@@ -225,29 +234,56 @@ public class LoginFrame extends javax.swing.JFrame {
     private void loginBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginBtnActionPerformed
         String username = userFld.getText();
         String password = new String(passFld.getPassword());
-        
+        boolean successLogin = false;
         LibUser theUser;
         theUser = SQLCore.authenticateUser(username, password);
+        
         if(theUser != null){
+            if(librarianCheck.isSelected() && theUser.librarian == 'Y'){
+                successLogin = true;
+            }
+            else if(!librarianCheck.isSelected()){
+                successLogin = true;
+            }
+        }
+        
+        if(successLogin){
             JOptionPane.showMessageDialog(this, "Login Successful", "Noice!", JOptionPane.INFORMATION_MESSAGE);
-            printUser(theUser);
+            if(librarianCheck.isSelected()){
+                LibrarianFrame librarianWindow = new LibrarianFrame(theUser);
+                librarianWindow.setVisible(true);
+                
+                librarianWindow.addWindowListener(new java.awt.event.WindowAdapter() {
+                    @Override
+                    public void windowClosing(java.awt.event.WindowEvent e) {
+                        System.out.println("yes");
+                        thisInstance.setVisible(true);
+                    }
+                });
+            }
+            else{
+                PatronFrame patronWindow = new PatronFrame(theUser);
+                patronWindow.setVisible(true);
+                
+                patronWindow.addWindowListener(new java.awt.event.WindowAdapter() {
+                    @Override
+                    public void windowClosing(java.awt.event.WindowEvent e) {
+                        thisInstance.setVisible(true);
+                    }
+                });
+            }
+            
+            this.setVisible(false);
         }
         else{
-            JOptionPane.showMessageDialog(this, "ERP", "not noice!", JOptionPane.INFORMATION_MESSAGE);
-            return;
+            JOptionPane.showMessageDialog(this, 
+                    "Invalid username/password",
+                    "Login Failed",
+                    JOptionPane.ERROR_MESSAGE);
         }
         
-        PatronFrame patronWindow = new PatronFrame(theUser);
-        patronWindow.setVisible(true);
         
-        this.setVisible(false);
         
-        patronWindow.addWindowListener(new java.awt.event.WindowAdapter() {
-            @Override
-            public void windowClosing(java.awt.event.WindowEvent e) {
-                thisInstance.setVisible(true);
-            }
-        });
     }//GEN-LAST:event_loginBtnActionPerformed
 
     private void registerBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_registerBtnActionPerformed
@@ -320,6 +356,7 @@ public class LoginFrame extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel contentPane;
     private javax.swing.JLabel exitBtn;
+    private javax.swing.JCheckBox librarianCheck;
     private javax.swing.JButton loginBtn;
     private javax.swing.JPanel loginPane;
     private javax.swing.JLabel miniBtn;

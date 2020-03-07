@@ -7,16 +7,10 @@ import customclass.LibUser;
 import customclass.MyBook;
 import customclass.MyBookView;
 import java.awt.CardLayout;
-import java.awt.Component;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
-import javax.swing.JButton;
 import javax.swing.JOptionPane;
-import static javax.swing.JOptionPane.OK_OPTION;
-import javax.swing.plaf.basic.BasicButtonUI;
-import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableModel;
 import oracledb.SQLCore;
 
 /*
@@ -54,8 +48,8 @@ public class PatronFrame extends javax.swing.JFrame {
         System.out.println(user);
         this.user = user;
         
+        greetingNameLbl.setText(user.fName);
         refreshTables();
-        greetingLbl.setText("Hello, "+ this.user.fName);
     }
 
     /**
@@ -76,6 +70,7 @@ public class PatronFrame extends javax.swing.JFrame {
         aboutBtn = new javax.swing.JButton();
         logoutBtn = new javax.swing.JButton();
         greetingLbl = new javax.swing.JLabel();
+        greetingNameLbl = new javax.swing.JLabel();
         panelCards = new javax.swing.JPanel();
         myBooksPanelCard = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -150,28 +145,36 @@ public class PatronFrame extends javax.swing.JFrame {
 
         greetingLbl.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         greetingLbl.setForeground(new java.awt.Color(255, 255, 255));
-        greetingLbl.setText("Hello, User!");
+        greetingLbl.setText("Hello, ");
+
+        greetingNameLbl.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        greetingNameLbl.setForeground(new java.awt.Color(255, 255, 255));
+        greetingNameLbl.setText("Librarian!");
+        greetingNameLbl.setAlignmentX(0.5F);
 
         javax.swing.GroupLayout sidePaneLayout = new javax.swing.GroupLayout(sidePane);
         sidePane.setLayout(sidePaneLayout);
         sidePaneLayout.setHorizontalGroup(
             sidePaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(sidePaneLayout.createSequentialGroup()
-                .addContainerGap(19, Short.MAX_VALUE)
+                .addContainerGap()
                 .addGroup(sidePaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, sidePaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(sidePaneLayout.createSequentialGroup()
-                            .addGroup(sidePaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(myBooksBtn)
-                                .addComponent(searchBooksBtn)
-                                .addComponent(aboutBtn))
-                            .addContainerGap())
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, sidePaneLayout.createSequentialGroup()
-                            .addGap(17, 17, 17)
-                            .addComponent(greetingLbl)
-                            .addGap(23, 23, 23)))
+                    .addGroup(sidePaneLayout.createSequentialGroup()
+                        .addGap(0, 7, Short.MAX_VALUE)
+                        .addGroup(sidePaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, sidePaneLayout.createSequentialGroup()
+                                .addGroup(sidePaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(myBooksBtn)
+                                    .addComponent(searchBooksBtn)
+                                    .addComponent(aboutBtn))
+                                .addGap(25, 25, 25))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, sidePaneLayout.createSequentialGroup()
+                                .addComponent(logoutBtn)
+                                .addContainerGap())))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, sidePaneLayout.createSequentialGroup()
-                        .addComponent(logoutBtn)
+                        .addGroup(sidePaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(greetingNameLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(greetingLbl, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addContainerGap())))
         );
         sidePaneLayout.setVerticalGroup(
@@ -183,12 +186,17 @@ public class PatronFrame extends javax.swing.JFrame {
                 .addComponent(searchBooksBtn)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(aboutBtn)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 282, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 264, Short.MAX_VALUE)
                 .addComponent(greetingLbl)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(greetingNameLbl)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(logoutBtn)
                 .addGap(40, 40, 40))
         );
+
+        greetingLbl.setHorizontalAlignment(javax.swing.JLabel.CENTER);
+        greetingNameLbl.setHorizontalAlignment(javax.swing.JLabel.CENTER);
 
         jSplitPane2.setLeftComponent(sidePane);
 
@@ -250,7 +258,7 @@ public class PatronFrame extends javax.swing.JFrame {
                         .addGroup(myBooksPanelCardLayout.createSequentialGroup()
                             .addGap(406, 406, 406)
                             .addComponent(jLabel2))))
-                .addContainerGap(113, Short.MAX_VALUE))
+                .addContainerGap(118, Short.MAX_VALUE))
         );
         myBooksPanelCardLayout.setVerticalGroup(
             myBooksPanelCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -353,7 +361,7 @@ public class PatronFrame extends javax.swing.JFrame {
                             .addComponent(jButton7))
                         .addComponent(jLabel3)
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 865, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(46, Short.MAX_VALUE))
+                .addContainerGap(51, Short.MAX_VALUE))
         );
         searchBooksPanelCardLayout.setVerticalGroup(
             searchBooksPanelCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -382,7 +390,7 @@ public class PatronFrame extends javax.swing.JFrame {
         historyPanelCardLayout.setHorizontalGroup(
             historyPanelCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, historyPanelCardLayout.createSequentialGroup()
-                .addContainerGap(504, Short.MAX_VALUE)
+                .addContainerGap(509, Short.MAX_VALUE)
                 .addComponent(jSpinner1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(401, 401, 401))
         );
@@ -446,9 +454,9 @@ public class PatronFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_searchBooksBtnActionPerformed
 
     private void logoutBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_logoutBtnActionPerformed
-        int x = JOptionPane.showConfirmDialog(null, "Are you sure you want to logout?","Logging Out",JOptionPane.OK_OPTION);
+        int x = JOptionPane.showConfirmDialog(null, "Are you sure you want to logout?","Logging Out",JOptionPane.YES_NO_OPTION);
 
-        if(x==OK_OPTION){
+        if(x==JOptionPane.OK_OPTION){
             this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
         }
     }//GEN-LAST:event_logoutBtnActionPerformed
@@ -471,7 +479,7 @@ public class PatronFrame extends javax.swing.JFrame {
         if(choice == JOptionPane.YES_OPTION){
             SQLCore.returnBook(user, selectedBook);
             JOptionPane.showMessageDialog(this, 
-                    "You have successfully borrowed " + selectedBook.getTitle(), 
+                    "You have successfully returned " + selectedBook.getTitle(), 
                     "Success", 
                     JOptionPane.INFORMATION_MESSAGE);
             
@@ -536,9 +544,9 @@ public class PatronFrame extends javax.swing.JFrame {
         myBookList.fill();
         ArrayList<MyBook> myList = myBookList.getBookList();
         
-        
         if(myList != null){
             for(MyBook item: myList){
+                System.out.println(item);
                 myBooksModel.addRow(item.toRow());
             }
         }
@@ -592,6 +600,7 @@ public class PatronFrame extends javax.swing.JFrame {
     private javax.swing.JButton aboutBtn;
     private javax.swing.JButton borrowBtn;
     private javax.swing.JLabel greetingLbl;
+    private javax.swing.JLabel greetingNameLbl;
     private javax.swing.JPanel historyPanelCard;
     private javax.swing.JButton jButton6;
     private javax.swing.JButton jButton7;

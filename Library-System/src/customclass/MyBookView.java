@@ -14,8 +14,7 @@ import oracledb.SQLCore;
  */
 public class MyBookView {
     private ArrayList<MyBook> bookList;
-    private int userId;
-    private int size;
+    private final int userId;
     
     public MyBookView(int userId){
         this.userId = userId;
@@ -33,9 +32,19 @@ public class MyBookView {
         return bookList.get(index);
     }
     
-    public static MyBook findIsbn(ArrayList<MyBook> list, String isbn){
+    public static MyBook findBookByIsbn(ArrayList<MyBook> list, String isbn){
         for(MyBook item: list){
             if(item.getIsbn().equals(isbn)){
+                return item;
+            }
+        }
+        
+        return null;
+    }
+    
+    public static MyBook findBookById(ArrayList<MyBook> list, int id){
+        for(MyBook item: list){
+            if(item.getId() == id){
                 return item;
             }
         }
@@ -50,8 +59,12 @@ public class MyBookView {
         }
     }
     
+    private int size(){
+        return bookList.size();
+    }
+    
     public static void main(String[] args) {
-        MyBookView lib = new MyBookView(2);
+        MyBookView lib = new MyBookView(3);
         
         lib.fill();
         lib.printBooks();

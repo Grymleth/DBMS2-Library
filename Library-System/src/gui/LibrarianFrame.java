@@ -1,7 +1,16 @@
+package gui;
 
+
+import customclass.LibUser;
+import customclass.LibUserView;
+import customclass.PendingLoan;
+import customclass.PendingLoanView;
 import java.awt.CardLayout;
+import java.awt.event.WindowEvent;
+import java.util.ArrayList;
 import javax.swing.JOptionPane;
-import static javax.swing.JOptionPane.OK_OPTION;
+import javax.swing.table.DefaultTableModel;
+import oracledb.SQLCore;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -13,17 +22,33 @@ import static javax.swing.JOptionPane.OK_OPTION;
  *
  * @author Andrei
  */
-public class LibrarianWindow extends javax.swing.JFrame {
-
+public class LibrarianFrame extends javax.swing.JFrame {
+    LibrarianFrame thisInstance = this;
+    LibUser user;
+    
+    private LibUserView userList;
+    private PendingLoanView pendingList;
+    
+    private DefaultTableModel userModel;
+    private DefaultTableModel pendingLoanModel;
+    
     /**
      * Creates new form LibrarianWindow
      */
    CardLayout cardLayout;
-    public LibrarianWindow() {
+    public LibrarianFrame() {
         initComponents();
-        
-        
+        this.setLocationRelativeTo(null);
         cardLayout = (CardLayout)(panelCards.getLayout());
+        
+        refreshTables();
+    }
+    
+    public LibrarianFrame(LibUser user){
+        this();
+        
+        this.user = user;
+        greetingNameLbl.setText(user.fName);
     }
 
     /**
@@ -43,8 +68,16 @@ public class LibrarianWindow extends javax.swing.JFrame {
         manageBooksButton = new javax.swing.JButton();
         manageLoansButton = new javax.swing.JButton();
         logoutButton = new javax.swing.JButton();
-        jLabel1 = new javax.swing.JLabel();
+        greetingLbl = new javax.swing.JLabel();
+        greetingNameLbl = new javax.swing.JLabel();
         panelCards = new javax.swing.JPanel();
+        manageUserPanelCard = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        userTable = new javax.swing.JTable();
+        jLabel2 = new javax.swing.JLabel();
+        editButtonManageUsers = new javax.swing.JButton();
+        addButtonManageUsers = new javax.swing.JButton();
+        deleteButtonManageUsers = new javax.swing.JButton();
         manageBooksPanelCard = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         jTable2 = new javax.swing.JTable();
@@ -55,19 +88,11 @@ public class LibrarianWindow extends javax.swing.JFrame {
         manageLoansPanelCard = new javax.swing.JPanel();
         jLabel5 = new javax.swing.JLabel();
         jScrollPane4 = new javax.swing.JScrollPane();
-        jTable4 = new javax.swing.JTable();
-        editButtonManageLoans = new javax.swing.JButton();
-        addButtonManageLoans = new javax.swing.JButton();
-        deleteButtonManageLoans = new javax.swing.JButton();
-        manageUserPanelCard = new javax.swing.JPanel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
-        jLabel2 = new javax.swing.JLabel();
-        editButtonManageUsers = new javax.swing.JButton();
-        addButtonManageUsers = new javax.swing.JButton();
-        deleteButtonManageUsers = new javax.swing.JButton();
+        pendingLoanTable = new javax.swing.JTable();
+        loanBtnPendingLoans = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setUndecorated(true);
         setPreferredSize(new java.awt.Dimension(1129, 593));
 
         LibrarianWindowJLabel.setBackground(new java.awt.Color(18, 203, 196));
@@ -100,7 +125,7 @@ public class LibrarianWindow extends javax.swing.JFrame {
 
         manageLoansButton.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
         manageLoansButton.setForeground(new java.awt.Color(255, 255, 255));
-        manageLoansButton.setText("Manage Loans");
+        manageLoansButton.setText("Pending Loans");
         manageLoansButton.setBorderPainted(false);
         manageLoansButton.setContentAreaFilled(false);
         manageLoansButton.addActionListener(new java.awt.event.ActionListener() {
@@ -120,32 +145,43 @@ public class LibrarianWindow extends javax.swing.JFrame {
             }
         });
 
-        jLabel1.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
-        jLabel1.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel1.setText("Hello, Librarian!");
+        greetingLbl.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        greetingLbl.setForeground(new java.awt.Color(255, 255, 255));
+        greetingLbl.setText("Hello, ");
+
+        greetingNameLbl.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        greetingNameLbl.setForeground(new java.awt.Color(255, 255, 255));
+        greetingNameLbl.setText("Librarian!");
+        greetingNameLbl.setAlignmentX(0.5F);
 
         javax.swing.GroupLayout LibrarianWindowJLabelLayout = new javax.swing.GroupLayout(LibrarianWindowJLabel);
         LibrarianWindowJLabel.setLayout(LibrarianWindowJLabelLayout);
         LibrarianWindowJLabelLayout.setHorizontalGroup(
             LibrarianWindowJLabelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(LibrarianWindowJLabelLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap()
                 .addGroup(LibrarianWindowJLabelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, LibrarianWindowJLabelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, LibrarianWindowJLabelLayout.createSequentialGroup()
-                            .addGroup(LibrarianWindowJLabelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(manageLoansButton)
-                                .addComponent(jLabel8))
-                            .addGap(23, 23, 23))
-                        .addGroup(LibrarianWindowJLabelLayout.createSequentialGroup()
-                            .addGroup(LibrarianWindowJLabelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(manageUsersButton)
-                                .addComponent(manageBooksButton))
-                            .addContainerGap()))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, LibrarianWindowJLabelLayout.createSequentialGroup()
+                    .addGroup(LibrarianWindowJLabelLayout.createSequentialGroup()
+                        .addGap(0, 8, Short.MAX_VALUE)
                         .addGroup(LibrarianWindowJLabelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(logoutButton, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.TRAILING))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, LibrarianWindowJLabelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, LibrarianWindowJLabelLayout.createSequentialGroup()
+                                    .addGroup(LibrarianWindowJLabelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(manageLoansButton)
+                                        .addComponent(jLabel8))
+                                    .addGap(23, 23, 23))
+                                .addGroup(LibrarianWindowJLabelLayout.createSequentialGroup()
+                                    .addGroup(LibrarianWindowJLabelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(manageUsersButton)
+                                        .addComponent(manageBooksButton))
+                                    .addContainerGap()))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, LibrarianWindowJLabelLayout.createSequentialGroup()
+                                .addComponent(logoutButton)
+                                .addContainerGap())))
+                    .addGroup(LibrarianWindowJLabelLayout.createSequentialGroup()
+                        .addGroup(LibrarianWindowJLabelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(greetingNameLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(greetingLbl, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addContainerGap())))
         );
         LibrarianWindowJLabelLayout.setVerticalGroup(
@@ -159,17 +195,113 @@ public class LibrarianWindow extends javax.swing.JFrame {
                 .addComponent(manageBooksButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(manageLoansButton)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 252, Short.MAX_VALUE)
-                .addComponent(jLabel1)
-                .addGap(48, 48, 48)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 253, Short.MAX_VALUE)
+                .addComponent(greetingLbl)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(greetingNameLbl)
+                .addGap(18, 18, 18)
                 .addComponent(logoutButton)
                 .addGap(40, 40, 40))
         );
+
+        greetingLbl.setHorizontalAlignment(javax.swing.JLabel.CENTER);
+        greetingNameLbl.setHorizontalAlignment(javax.swing.JLabel.CENTER);
 
         jSplitPane2.setLeftComponent(LibrarianWindowJLabel);
 
         panelCards.setBackground(new java.awt.Color(196, 229, 56));
         panelCards.setLayout(new java.awt.CardLayout());
+
+        manageUserPanelCard.setBackground(new java.awt.Color(196, 229, 56));
+
+        userTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "First Name", "Last Name", "Username", "Password"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                true, false, false, true
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jScrollPane1.setViewportView(userTable);
+        if (userTable.getColumnModel().getColumnCount() > 0) {
+            userTable.getColumnModel().getColumn(3).setResizable(false);
+        }
+
+        jLabel2.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
+        jLabel2.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel2.setText("Manage Users");
+
+        editButtonManageUsers.setText("Edit");
+        editButtonManageUsers.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                editButtonManageUsersActionPerformed(evt);
+            }
+        });
+
+        addButtonManageUsers.setText("Add");
+        addButtonManageUsers.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                addButtonManageUsersActionPerformed(evt);
+            }
+        });
+
+        deleteButtonManageUsers.setText("Delete");
+        deleteButtonManageUsers.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                deleteButtonManageUsersActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout manageUserPanelCardLayout = new javax.swing.GroupLayout(manageUserPanelCard);
+        manageUserPanelCard.setLayout(manageUserPanelCardLayout);
+        manageUserPanelCardLayout.setHorizontalGroup(
+            manageUserPanelCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(manageUserPanelCardLayout.createSequentialGroup()
+                .addGap(379, 379, 379)
+                .addComponent(jLabel2)
+                .addContainerGap(391, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, manageUserPanelCardLayout.createSequentialGroup()
+                .addGroup(manageUserPanelCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(manageUserPanelCardLayout.createSequentialGroup()
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(addButtonManageUsers, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(editButtonManageUsers, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(deleteButtonManageUsers, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(manageUserPanelCardLayout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 716, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(104, 104, 104))
+        );
+        manageUserPanelCardLayout.setVerticalGroup(
+            manageUserPanelCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, manageUserPanelCardLayout.createSequentialGroup()
+                .addGap(36, 36, 36)
+                .addComponent(jLabel2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(12, 12, 12)
+                .addGroup(manageUserPanelCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(addButtonManageUsers)
+                    .addComponent(editButtonManageUsers)
+                    .addComponent(deleteButtonManageUsers))
+                .addContainerGap(37, Short.MAX_VALUE))
+        );
+
+        panelCards.add(manageUserPanelCard, "manageUserPanelCard");
+        manageUserPanelCard.getAccessibleContext().setAccessibleParent(manageUserPanelCard);
 
         manageBooksPanelCard.setBackground(new java.awt.Color(196, 229, 56));
 
@@ -231,7 +363,7 @@ public class LibrarianWindow extends javax.swing.JFrame {
                             .addGroup(manageBooksPanelCardLayout.createSequentialGroup()
                                 .addGap(312, 312, 312)
                                 .addComponent(jLabel3)))))
-                .addContainerGap(71, Short.MAX_VALUE))
+                .addContainerGap(47, Short.MAX_VALUE))
         );
         manageBooksPanelCardLayout.setVerticalGroup(
             manageBooksPanelCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -254,9 +386,9 @@ public class LibrarianWindow extends javax.swing.JFrame {
 
         jLabel5.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
         jLabel5.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel5.setText("On Hold");
+        jLabel5.setText("Pending Loans");
 
-        jTable4.setModel(new javax.swing.table.DefaultTableModel(
+        pendingLoanTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null, null},
                 {null, null, null, null, null},
@@ -275,36 +407,30 @@ public class LibrarianWindow extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
-        jTable4.getTableHeader().setReorderingAllowed(false);
-        jScrollPane4.setViewportView(jTable4);
+        pendingLoanTable.getTableHeader().setReorderingAllowed(false);
+        jScrollPane4.setViewportView(pendingLoanTable);
 
-        editButtonManageLoans.setText("Edit");
-
-        addButtonManageLoans.setText("Add");
-
-        deleteButtonManageLoans.setText("Delete");
+        loanBtnPendingLoans.setText("Accept Loan");
+        loanBtnPendingLoans.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                loanBtnPendingLoansActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout manageLoansPanelCardLayout = new javax.swing.GroupLayout(manageLoansPanelCard);
         manageLoansPanelCard.setLayout(manageLoansPanelCardLayout);
         manageLoansPanelCardLayout.setHorizontalGroup(
             manageLoansPanelCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, manageLoansPanelCardLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(manageLoansPanelCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, manageLoansPanelCardLayout.createSequentialGroup()
-                        .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 865, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(44, 44, 44))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, manageLoansPanelCardLayout.createSequentialGroup()
-                        .addComponent(addButtonManageLoans, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(editButtonManageLoans, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(deleteButtonManageLoans, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(43, 43, 43))))
             .addGroup(manageLoansPanelCardLayout.createSequentialGroup()
                 .addGap(413, 413, 413)
                 .addComponent(jLabel5)
                 .addGap(0, 0, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, manageLoansPanelCardLayout.createSequentialGroup()
+                .addContainerGap(27, Short.MAX_VALUE)
+                .addGroup(manageLoansPanelCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane4, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 865, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(loanBtnPendingLoans, javax.swing.GroupLayout.Alignment.TRAILING))
+                .addGap(44, 44, 44))
         );
         manageLoansPanelCardLayout.setVerticalGroup(
             manageLoansPanelCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -313,106 +439,12 @@ public class LibrarianWindow extends javax.swing.JFrame {
                 .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 387, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(manageLoansPanelCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(deleteButtonManageLoans)
-                    .addComponent(addButtonManageLoans)
-                    .addComponent(editButtonManageLoans))
-                .addGap(57, 57, 57))
+                .addGap(18, 18, 18)
+                .addComponent(loanBtnPendingLoans)
+                .addContainerGap(72, Short.MAX_VALUE))
         );
 
         panelCards.add(manageLoansPanelCard, "manageLoansPanelCard");
-
-        manageUserPanelCard.setBackground(new java.awt.Color(196, 229, 56));
-
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] {
-                "First Name", "Last Name", "Username", "Password"
-            }
-        ) {
-            boolean[] canEdit = new boolean [] {
-                true, false, false, true
-            };
-
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
-        });
-        jScrollPane1.setViewportView(jTable1);
-        if (jTable1.getColumnModel().getColumnCount() > 0) {
-            jTable1.getColumnModel().getColumn(3).setResizable(false);
-        }
-
-        jLabel2.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
-        jLabel2.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel2.setText("Manage Users");
-
-        editButtonManageUsers.setText("Edit");
-        editButtonManageUsers.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                editButtonManageUsersActionPerformed(evt);
-            }
-        });
-
-        addButtonManageUsers.setText("Add");
-        addButtonManageUsers.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                addButtonManageUsersActionPerformed(evt);
-            }
-        });
-
-        deleteButtonManageUsers.setText("Delete");
-        deleteButtonManageUsers.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                deleteButtonManageUsersActionPerformed(evt);
-            }
-        });
-
-        javax.swing.GroupLayout manageUserPanelCardLayout = new javax.swing.GroupLayout(manageUserPanelCard);
-        manageUserPanelCard.setLayout(manageUserPanelCardLayout);
-        manageUserPanelCardLayout.setHorizontalGroup(
-            manageUserPanelCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(manageUserPanelCardLayout.createSequentialGroup()
-                .addGroup(manageUserPanelCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addGroup(manageUserPanelCardLayout.createSequentialGroup()
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(addButtonManageUsers, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(editButtonManageUsers, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(deleteButtonManageUsers, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(manageUserPanelCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(manageUserPanelCardLayout.createSequentialGroup()
-                            .addGap(106, 106, 106)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 716, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGroup(manageUserPanelCardLayout.createSequentialGroup()
-                            .addGap(406, 406, 406)
-                            .addComponent(jLabel2))))
-                .addContainerGap(138, Short.MAX_VALUE))
-        );
-        manageUserPanelCardLayout.setVerticalGroup(
-            manageUserPanelCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, manageUserPanelCardLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel2)
-                .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 9, Short.MAX_VALUE)
-                .addGroup(manageUserPanelCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(addButtonManageUsers)
-                    .addComponent(editButtonManageUsers)
-                    .addComponent(deleteButtonManageUsers))
-                .addGap(58, 58, 58))
-        );
-
-        panelCards.add(manageUserPanelCard, "manageUserPanelCard");
-        manageUserPanelCard.getAccessibleContext().setAccessibleParent(manageUserPanelCard);
 
         jSplitPane2.setRightComponent(panelCards);
 
@@ -454,25 +486,55 @@ public class LibrarianWindow extends javax.swing.JFrame {
     }//GEN-LAST:event_manageLoansButtonActionPerformed
 
     private void logoutButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_logoutButtonActionPerformed
-        int x = JOptionPane.showConfirmDialog(null, "Are you sure you want to logout?","Logging Out",JOptionPane.OK_OPTION);
+        int x = JOptionPane.showConfirmDialog(null, "Are you sure you want to logout?","Logging Out",JOptionPane.YES_NO_OPTION);
 
-        if(x==OK_OPTION){
-            this.dispose();
-        }else{
-            return;
+        if(x==JOptionPane.YES_OPTION){
+            this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
         }
     }//GEN-LAST:event_logoutButtonActionPerformed
 
     private void editButtonManageUsersActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editButtonManageUsersActionPerformed
-        // TODO add your handling code here:
+        LibUser selectedUser = userList.getUser(userTable.getSelectedRow());
+        
+        EditUserDialog editDialog = new EditUserDialog(this, true, selectedUser);
+        editDialog.setVisible(true);
+        editDialog.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosed(java.awt.event.WindowEvent e) {
+                thisInstance.refreshTables();
+            }
+        });
     }//GEN-LAST:event_editButtonManageUsersActionPerformed
 
     private void addButtonManageUsersActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addButtonManageUsersActionPerformed
-        // TODO add your handling code here:
+        RegisterDialog addUserDialog = new RegisterDialog(this, true, "Librarian");
+        addUserDialog.setVisible(true);
+        addUserDialog.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosed(java.awt.event.WindowEvent e) {
+                thisInstance.refreshTables();
+            }
+        });
     }//GEN-LAST:event_addButtonManageUsersActionPerformed
 
     private void deleteButtonManageUsersActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteButtonManageUsersActionPerformed
-        // TODO add your handling code here:
+        LibUser selectedUser = userList.getUser(userTable.getSelectedRow());
+        
+        int x = JOptionPane.showConfirmDialog(null,
+                "Are you sure you want to delete "+selectedUser.loginid+"?",
+                "Confirmation",
+                JOptionPane.YES_NO_OPTION);
+        if(x==JOptionPane.NO_OPTION){
+            
+        }
+        
+        SQLCore.deleteUser(selectedUser.userId);
+        JOptionPane.showMessageDialog(this,
+                "You have successfully deleted "+selectedUser.loginid,
+                "Success",
+                JOptionPane.INFORMATION_MESSAGE);
+        
+        refreshTables();
     }//GEN-LAST:event_deleteButtonManageUsersActionPerformed
 
     private void addButtonManageBooksActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addButtonManageBooksActionPerformed
@@ -484,9 +546,73 @@ public class LibrarianWindow extends javax.swing.JFrame {
     }//GEN-LAST:event_editButtonManageBooksActionPerformed
 
     private void deleteButtonManageBooksActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteButtonManageBooksActionPerformed
-        // TODO add your handling code here:
+        
     }//GEN-LAST:event_deleteButtonManageBooksActionPerformed
 
+    private void loanBtnPendingLoansActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loanBtnPendingLoansActionPerformed
+        PendingLoan selectedPending = pendingList.getPending(pendingLoanTable.getSelectedRow());
+        
+        int choice = JOptionPane.showConfirmDialog(this,
+                "Are you sure you want to accept the loan?",
+                "Confirmation",
+                JOptionPane.YES_NO_OPTION);
+        
+        if(choice == JOptionPane.NO_OPTION){
+            return;
+        }
+        
+        SQLCore.acceptLoan(selectedPending.getTransactionNo());
+        
+        JOptionPane.showMessageDialog(this,
+                "Loan has been accepted!",
+                "Success",
+                JOptionPane.INFORMATION_MESSAGE);
+        
+        refreshTables();
+    }//GEN-LAST:event_loanBtnPendingLoansActionPerformed
+
+    public void refreshTables(){
+        initTableModels();
+        fillTables();
+    }
+    
+    public void initTableModels(){
+        userModel = new LibraryTableModel();
+        userModel.setColumnIdentifiers(new String [] {"Username", "First Name", "Last Name", "Address", "Status", "Unpaid Fines"});
+        userTable.setModel(userModel);
+        
+        pendingLoanModel = new LibraryTableModel();
+        pendingLoanModel.setColumnIdentifiers(new String [] {"Transaction No.","Name", "Title","Authors","ISBN", "Copy No.", "Date on Hold"});
+        pendingLoanTable.setModel(pendingLoanModel);
+    }
+    
+    public void fillTables(){
+        userList = new LibUserView();
+        userList.fill();
+        
+        ArrayList<LibUser> libUserList = userList.getUserList();
+        
+        if(libUserList != null){
+            for(LibUser item: libUserList){
+                System.out.println(item);
+                userModel.addRow(item.toRow());
+            }
+        }
+        
+        pendingList = new PendingLoanView();
+        pendingList.fill();
+        
+        ArrayList<PendingLoan> pendingLoanList = pendingList.getPendingList();
+        
+        if(pendingLoanList != null){
+            for(PendingLoan item: pendingLoanList){
+                System.out.println(item);
+                pendingLoanModel.addRow(item.toRow());
+            }
+        }
+        
+    }
+    
     /**
      * @param args the command line arguments
      */
@@ -504,36 +630,42 @@ public class LibrarianWindow extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(LibrarianWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(LibrarianFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(LibrarianWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(LibrarianFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(LibrarianWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(LibrarianFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(LibrarianWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(LibrarianFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new LibrarianWindow().setVisible(true);
+                new LibrarianFrame().setVisible(true);
             }
         });
+    }
+    
+    public class LibraryTableModel extends DefaultTableModel{
+        @Override
+        public boolean isCellEditable(int rowIndex, int mColIndex){
+            return false;
+        }
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel LibrarianWindowJLabel;
     private javax.swing.JButton addButtonManageBooks;
-    private javax.swing.JButton addButtonManageLoans;
     private javax.swing.JButton addButtonManageUsers;
     private javax.swing.JButton deleteButtonManageBooks;
-    private javax.swing.JButton deleteButtonManageLoans;
     private javax.swing.JButton deleteButtonManageUsers;
     private javax.swing.JButton editButtonManageBooks;
-    private javax.swing.JButton editButtonManageLoans;
     private javax.swing.JButton editButtonManageUsers;
-    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel greetingLbl;
+    private javax.swing.JLabel greetingNameLbl;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel5;
@@ -543,9 +675,8 @@ public class LibrarianWindow extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JSplitPane jSplitPane2;
-    private javax.swing.JTable jTable1;
     private javax.swing.JTable jTable2;
-    private javax.swing.JTable jTable4;
+    private javax.swing.JButton loanBtnPendingLoans;
     private javax.swing.JButton logoutButton;
     private javax.swing.JButton manageBooksButton;
     private javax.swing.JPanel manageBooksPanelCard;
@@ -554,5 +685,7 @@ public class LibrarianWindow extends javax.swing.JFrame {
     private javax.swing.JPanel manageUserPanelCard;
     private javax.swing.JButton manageUsersButton;
     private javax.swing.JPanel panelCards;
+    private javax.swing.JTable pendingLoanTable;
+    private javax.swing.JTable userTable;
     // End of variables declaration//GEN-END:variables
 }
