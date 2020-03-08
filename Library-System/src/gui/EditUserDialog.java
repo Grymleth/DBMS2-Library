@@ -6,6 +6,7 @@
 package gui;
 
 import customclass.LibUser;
+import customclass.LibUserView;
 import java.awt.event.WindowEvent;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
@@ -16,7 +17,8 @@ import oracledb.SQLCore;
  * @author aevan
  */
 public class EditUserDialog extends javax.swing.JDialog {
-    LibUser user;
+    private LibUser user;
+    private LibUserView userList;
     /**
      * Creates new form EditUserDialog
      */
@@ -30,6 +32,8 @@ public class EditUserDialog extends javax.swing.JDialog {
     public EditUserDialog(java.awt.Frame parent, boolean modal, LibUser user){
         this(parent, modal);
         this.user = user;
+        this.userList = new LibUserView();
+        this.userList.fill();
         initFields();
     };
 
@@ -286,7 +290,16 @@ public class EditUserDialog extends javax.swing.JDialog {
             return;
         }
 
-        System.out.println("user id: "+user.userId);
+        LibUser user = userList.findUserByLoginId(userFld.getText());
+        if(user != null){
+            JOptionPane.showMessageDialog(this, 
+                    "Username already exists",
+                    "Invalid Username",
+                    JOptionPane.ERROR_MESSAGE);
+            
+            return;
+        }
+        
         int x = JOptionPane.showConfirmDialog(null, "Are you sure?","Confirm",JOptionPane.YES_NO_OPTION);
 
         if(x==JOptionPane.NO_OPTION){

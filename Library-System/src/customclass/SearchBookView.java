@@ -54,6 +54,16 @@ public class SearchBookView {
         }
         return null;
     }
+      
+         
+    public boolean isbnExists(String isbn){
+        for(SearchBook item: bookList){
+            if(item.getIsbn().equals(isbn)){
+                return true;
+            }
+        }
+        return false;
+    }
     
     public static void main(String[] args) {
         SearchBookView lib = new SearchBookView();

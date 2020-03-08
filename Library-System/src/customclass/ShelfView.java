@@ -19,12 +19,31 @@ public class ShelfView {
         shelfList = SQLCore.getShelves();
     }
     
-    public ArrayList<Shelf> getCopyList(){
+    public ArrayList<Shelf> getShelves(){
         return this.shelfList;
     }
     
     public Shelf getShelf(int index){
         return shelfList.get(index);
+    }
+    
+    public Object[] getIdArray(){
+        Object[] x = new Object[shelfList.size()];
+        for(int i=0;i<shelfList.size();i++){
+            x[i] = shelfList.get(i).getId();
+        }
+        
+        return x;
+    }
+    
+    public Shelf findShelfById(int shelfId){
+        for(Shelf item: shelfList){
+            if(item.getId() == shelfId){
+                return item;
+            }
+        }
+        
+        return null;
     }
     
     public void printShelves(){

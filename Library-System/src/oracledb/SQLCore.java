@@ -12,6 +12,7 @@ import customclass.PendingLoanView;
 import customclass.Shelf;
 import java.sql.CallableStatement;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -578,6 +579,148 @@ public class SQLCore extends SQLDriver {
         }
         
         System.out.println("Success editing copy");
+    }
+    
+    public static void editAuthor(int authorId, String name){
+        String statement = "call edit_author(?,?)";
+        
+        try(Connection con = DriverManager.getConnection(CONNECTION_URL, USER, PASS);
+                CallableStatement query = con.prepareCall(statement);
+                ){
+            query.setInt(2, authorId);
+            query.setString(1,name);
+            query.execute();
+        }catch(SQLException ex){
+            System.out.println(ex.getLocalizedMessage());
+            System.out.println("Error editingAuthor ");
+            return;
+        }
+        
+        System.out.println("Success editingAuthor");
+    }
+    
+    public static int getShelfContains(int shelfId){
+        String statement = "{?=call get_shelf_contains(?)}";
+        
+        try(Connection con = DriverManager.getConnection(CONNECTION_URL, USER, PASS);
+                CallableStatement query = con.prepareCall(statement);
+                ){
+            query.registerOutParameter(1, Types.NUMERIC);
+            query.setInt(2,shelfId);
+            query.execute();
+            return query.getInt(1);
+        }catch(SQLException ex){
+            System.out.println(ex.getLocalizedMessage());
+            System.out.println("Error getShelfContains ");
+            return 0;
+        }
+    }
+    
+    public static void addShelf(int capacity){
+        String statement = "call add_shelf(?)";
+        
+        try(Connection con = DriverManager.getConnection(CONNECTION_URL, USER, PASS);
+                CallableStatement query = con.prepareCall(statement);
+                ){
+            query.setInt(1,capacity);
+            query.execute();
+        }catch(SQLException ex){
+            System.out.println(ex.getLocalizedMessage());
+            System.out.println("Error addShelf ");
+            return;
+        }
+        
+        System.out.println("Success addShelf");
+    }
+    
+    public static void deleteShelf(int shelfId){
+        String statement = "call delete_shelf(?)";
+        
+        try(Connection con = DriverManager.getConnection(CONNECTION_URL, USER, PASS);
+                CallableStatement query = con.prepareCall(statement);
+                ){
+            query.setInt(1,shelfId);
+            query.execute();
+        }catch(SQLException ex){
+            System.out.println(ex.getLocalizedMessage());
+            System.out.println("Error deleteShelf ");
+            return;
+        }
+        System.out.println("Success deleteShelf");
+    }
+    
+    public static void editShelf(int shelfId, int newCapacity){
+        String statement = "call edit_shelf(?,?)";
+        
+        try(Connection con = DriverManager.getConnection(CONNECTION_URL, USER, PASS);
+                CallableStatement query = con.prepareCall(statement);
+                ){
+            query.setInt(1,shelfId);
+            query.setInt(2, newCapacity);
+            query.execute();
+        }catch(SQLException ex){
+            System.out.println(ex.getLocalizedMessage());
+            System.out.println("Error editShelf ");
+            return;
+        }
+        System.out.println("Success editShelf");
+    }
+    
+    public static boolean isbnExists(String isbn){
+        String statement = "{?=call isbn_exists(?)}";
+        
+        try(Connection con = DriverManager.getConnection(CONNECTION_URL, USER, PASS);
+                CallableStatement query = con.prepareCall(statement);
+                ){
+            query.registerOutParameter(1, Types.NUMERIC);
+            query.setString(2,isbn);
+            query.execute();
+            
+            if(query.getInt(1) == 1){
+                return true;
+            }
+        }catch(SQLException ex){
+            System.out.println(ex.getLocalizedMessage());
+            System.out.println("Error isbnExists ");
+            return false;
+        }
+        
+        return false;
+    }
+    
+    public static int computeFine(int userId, Date returned){
+        String statement = "{?=call isbn_exists(?)}";
+        int fine;
+        try(Connection con = DriverManager.getConnection(CONNECTION_URL, USER, PASS);
+                CallableStatement query = con.prepareCall(statement);
+                ){
+            query.registerOutParameter(1, Types.NUMERIC);
+            query.setDate(2,returned);
+            query.execute();
+            fine = query.getInt(1);
+        }catch(SQLException ex){
+            System.out.println(ex.getLocalizedMessage());
+            System.out.println("Error computeFine ");
+            return 0;
+        }
+        System.out.println("success computeFine");
+        
+        statement = "{call add_fine(?,?)}";
+        try(Connection con = DriverManager.getConnection(CONNECTION_URL, USER, PASS);
+                CallableStatement query = con.prepareCall(statement);
+                ){
+            query.setInt(1, userId);
+            query.setInt(2, fine);
+            
+            query.execute();
+        
+        }catch(SQLException ex){
+            System.out.println(ex.getLocalizedMessage());
+            System.out.println("Error insert fine ");
+            return 0;
+        }
+        System.out.println("success insert fine");
+        return fine;
     }
 }
     

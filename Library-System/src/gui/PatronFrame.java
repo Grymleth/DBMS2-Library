@@ -494,6 +494,23 @@ public class PatronFrame extends javax.swing.JFrame {
     private void borrowBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_borrowBtnActionPerformed
         SearchBook selectedBook = searchBookList.getBook(searchBooksTable.getSelectedRow());
         
+        if(myBookList.size() == 2){
+            JOptionPane.showMessageDialog(this, 
+                    "You already have 2 books on Hold/Loan\n"
+                            + "Please, settle your transactions before borrowing more",
+                    "Invalid Borrow",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        if(selectedBook.getOnShelf() == 0){
+            JOptionPane.showMessageDialog(this, 
+                    "This book has no more copies on shelf",
+                    "Invalid Borrow",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
         int choice = JOptionPane.showConfirmDialog(this, 
                 "Are you sure you want to borrow this book?",
                 "Confirm", 

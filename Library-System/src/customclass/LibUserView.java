@@ -20,8 +20,8 @@ public class LibUserView {
         userList = SQLCore.getUserView();
     }
     
-    public static LibUser findUserByLoginId(ArrayList<LibUser> list, String loginid){
-        for(LibUser item: list){
+    public LibUser findUserByLoginId(String loginid){
+        for(LibUser item: userList){
             if(item.loginid.equals(loginid)){
                 return item;
             }

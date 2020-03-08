@@ -6,6 +6,7 @@
 package customclass;
 
 import java.util.Iterator;
+import oracledb.SQLCore;
 
 /**
  *
@@ -13,11 +14,13 @@ import java.util.Iterator;
  */
 public class Shelf {
     private int shelfId;
+    private int contains;
     private int capacity;
     
     public Shelf(int shelfId, int capacity){
         this.shelfId = shelfId;
         this.capacity = capacity;
+        this.contains = SQLCore.getShelfContains(shelfId);
     }
     
     public int getId(){
@@ -28,18 +31,24 @@ public class Shelf {
         return this.capacity;
     }
     
+    public int getContains(){
+        return this.contains;
+    }
+    
     @Override
     public String toString(){
         
-        return String.format("%d,%d",
+        return String.format("%d,%d,%d",
                 shelfId,
-                capacity);
+                capacity,
+                contains);
     }
     
     public String[] toRow(){
-        String[] arr = new String[2];
+        String[] arr = new String[3];
         arr[0] = Integer.toString(shelfId);
         arr[1] = Integer.toString(capacity);
+        arr[2] = Integer.toString(contains);
         
         return arr;
     }

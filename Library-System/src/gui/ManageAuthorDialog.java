@@ -257,11 +257,20 @@ public class ManageAuthorDialog extends javax.swing.JDialog {
     }//GEN-LAST:event_exitBtnMouseClicked
 
     private void editBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editBtnActionPerformed
-        // TODO add your handling code here:
+        String authorName = JOptionPane.showInputDialog(this, "Insert new Author name");
+        
+        LibAuthor selectedAuthor = authorList.getAuthor(authorTable.getSelectedRow());        
+        if(authorName == null){
+            return;
+        }
+        
+        SQLCore.editAuthor(selectedAuthor.getId(), authorName);
+        
+        refreshTables();
     }//GEN-LAST:event_editBtnActionPerformed
 
     private void addBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addBtnActionPerformed
-        String authorName = JOptionPane.showInputDialog(this, "Insert Author name","Input");
+        String authorName = JOptionPane.showInputDialog(this, "Insert Author name","");
         
         if(authorName == null){
             return;

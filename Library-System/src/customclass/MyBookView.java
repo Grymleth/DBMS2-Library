@@ -22,6 +22,10 @@ public class MyBookView {
     
     public void fill(){
         bookList = SQLCore.getMyBookView(userId);
+        
+        if(bookList == null){
+            bookList = new ArrayList<>();
+        }
     }
     
     public ArrayList<MyBook> getBookList(){
@@ -59,7 +63,7 @@ public class MyBookView {
         }
     }
     
-    private int size(){
+    public int size(){
         return bookList.size();
     }
     

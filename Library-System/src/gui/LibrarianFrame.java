@@ -7,6 +7,8 @@ import customclass.PendingLoan;
 import customclass.PendingLoanView;
 import customclass.SearchBook;
 import customclass.SearchBookView;
+import customclass.Shelf;
+import customclass.ShelfView;
 import java.awt.CardLayout;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
@@ -31,10 +33,12 @@ public class LibrarianFrame extends javax.swing.JFrame {
     private LibUserView userList;
     private PendingLoanView pendingList;
     private SearchBookView manageBookList;
+    private ShelfView manageShelfList;
     
     private DefaultTableModel userModel;
     private DefaultTableModel pendingLoanModel;
     private DefaultTableModel manageBookModel;
+    private DefaultTableModel manageShelfModel;
     
     /**
      * Creates new form LibrarianWindow
@@ -74,7 +78,7 @@ public class LibrarianFrame extends javax.swing.JFrame {
         logoutButton = new javax.swing.JButton();
         greetingLbl = new javax.swing.JLabel();
         greetingNameLbl = new javax.swing.JLabel();
-        manageLoansButton1 = new javax.swing.JButton();
+        manageShelvesBtn = new javax.swing.JButton();
         panelCards = new javax.swing.JPanel();
         manageUserPanelCard = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -97,6 +101,13 @@ public class LibrarianFrame extends javax.swing.JFrame {
         jScrollPane4 = new javax.swing.JScrollPane();
         pendingLoanTable = new javax.swing.JTable();
         loanBtnPendingLoans = new javax.swing.JButton();
+        manageShelvesPanelCard = new javax.swing.JPanel();
+        jLabel6 = new javax.swing.JLabel();
+        jScrollPane5 = new javax.swing.JScrollPane();
+        manageShelfTable = new javax.swing.JTable();
+        addShelfBtnManageShelves = new javax.swing.JButton();
+        editShelfManageShelves = new javax.swing.JButton();
+        deleteShelfManageShelves = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setUndecorated(true);
@@ -162,14 +173,14 @@ public class LibrarianFrame extends javax.swing.JFrame {
         greetingNameLbl.setText("Librarian!");
         greetingNameLbl.setAlignmentX(0.5F);
 
-        manageLoansButton1.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
-        manageLoansButton1.setForeground(new java.awt.Color(255, 255, 255));
-        manageLoansButton1.setText("Manage Shelves");
-        manageLoansButton1.setBorderPainted(false);
-        manageLoansButton1.setContentAreaFilled(false);
-        manageLoansButton1.addActionListener(new java.awt.event.ActionListener() {
+        manageShelvesBtn.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
+        manageShelvesBtn.setForeground(new java.awt.Color(255, 255, 255));
+        manageShelvesBtn.setText("Manage Shelves");
+        manageShelvesBtn.setBorderPainted(false);
+        manageShelvesBtn.setContentAreaFilled(false);
+        manageShelvesBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                manageLoansButton1ActionPerformed(evt);
+                manageShelvesBtnActionPerformed(evt);
             }
         });
 
@@ -188,7 +199,7 @@ public class LibrarianFrame extends javax.swing.JFrame {
                                     .addGroup(LibrarianWindowJLabelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                         .addComponent(manageLoansButton)
                                         .addComponent(jLabel8)
-                                        .addComponent(manageLoansButton1))
+                                        .addComponent(manageShelvesBtn))
                                     .addGap(23, 23, 23))
                                 .addGroup(LibrarianWindowJLabelLayout.createSequentialGroup()
                                     .addGroup(LibrarianWindowJLabelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -216,7 +227,7 @@ public class LibrarianFrame extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(manageLoansButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(manageLoansButton1)
+                .addComponent(manageShelvesBtn)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 221, Short.MAX_VALUE)
                 .addComponent(greetingLbl)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -451,6 +462,11 @@ public class LibrarianFrame extends javax.swing.JFrame {
         });
         pendingLoanTable.getTableHeader().setReorderingAllowed(false);
         jScrollPane4.setViewportView(pendingLoanTable);
+        if (pendingLoanTable.getColumnModel().getColumnCount() > 0) {
+            pendingLoanTable.getColumnModel().getColumn(2).setHeaderValue("Author");
+            pendingLoanTable.getColumnModel().getColumn(3).setHeaderValue("ISBN");
+            pendingLoanTable.getColumnModel().getColumn(4).setHeaderValue("Transaction Date");
+        }
 
         loanBtnPendingLoans.setText("Accept Loan");
         loanBtnPendingLoans.addActionListener(new java.awt.event.ActionListener() {
@@ -487,6 +503,93 @@ public class LibrarianFrame extends javax.swing.JFrame {
         );
 
         panelCards.add(manageLoansPanelCard, "manageLoansPanelCard");
+
+        manageShelvesPanelCard.setBackground(new java.awt.Color(196, 229, 56));
+
+        jLabel6.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
+        jLabel6.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel6.setText("Manage Shelves");
+
+        manageShelfTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null}
+            },
+            new String [] {
+                "Shelf No", "Capacity"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        manageShelfTable.getTableHeader().setReorderingAllowed(false);
+        jScrollPane5.setViewportView(manageShelfTable);
+
+        addShelfBtnManageShelves.setText("Add Shelf");
+        addShelfBtnManageShelves.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                addShelfBtnManageShelvesActionPerformed(evt);
+            }
+        });
+
+        editShelfManageShelves.setText("Edit Shelf");
+        editShelfManageShelves.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                editShelfManageShelvesActionPerformed(evt);
+            }
+        });
+
+        deleteShelfManageShelves.setText("Delete Shelf");
+        deleteShelfManageShelves.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                deleteShelfManageShelvesActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout manageShelvesPanelCardLayout = new javax.swing.GroupLayout(manageShelvesPanelCard);
+        manageShelvesPanelCard.setLayout(manageShelvesPanelCardLayout);
+        manageShelvesPanelCardLayout.setHorizontalGroup(
+            manageShelvesPanelCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(manageShelvesPanelCardLayout.createSequentialGroup()
+                .addContainerGap(228, Short.MAX_VALUE)
+                .addGroup(manageShelvesPanelCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, manageShelvesPanelCardLayout.createSequentialGroup()
+                        .addComponent(jLabel6)
+                        .addGap(358, 358, 358))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, manageShelvesPanelCardLayout.createSequentialGroup()
+                        .addGroup(manageShelvesPanelCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(manageShelvesPanelCardLayout.createSequentialGroup()
+                                .addComponent(addShelfBtnManageShelves)
+                                .addGap(18, 18, 18)
+                                .addComponent(editShelfManageShelves)
+                                .addGap(18, 18, 18)
+                                .addComponent(deleteShelfManageShelves))
+                            .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 571, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(145, 145, 145))))
+        );
+        manageShelvesPanelCardLayout.setVerticalGroup(
+            manageShelvesPanelCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(manageShelvesPanelCardLayout.createSequentialGroup()
+                .addGap(33, 33, 33)
+                .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(31, 31, 31)
+                .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 387, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addGroup(manageShelvesPanelCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(addShelfBtnManageShelves)
+                    .addComponent(editShelfManageShelves)
+                    .addComponent(deleteShelfManageShelves))
+                .addContainerGap(60, Short.MAX_VALUE))
+        );
+
+        panelCards.add(manageShelvesPanelCard, "manageShelvesPanelCard");
 
         jSplitPane2.setRightComponent(panelCards);
 
@@ -558,7 +661,7 @@ public class LibrarianFrame extends javax.swing.JFrame {
                 "Confirmation",
                 JOptionPane.YES_NO_OPTION);
         if(x==JOptionPane.NO_OPTION){
-            
+            return;
         }
         
         SQLCore.deleteUser(selectedUser.userId);
@@ -571,7 +674,7 @@ public class LibrarianFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_deleteButtonManageUsersActionPerformed
 
     private void addBtnManageBooksActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addBtnManageBooksActionPerformed
-        AddBookDialog addBookDialog = new AddBookDialog(this, true);
+        AddBookDialog addBookDialog = new AddBookDialog(this, true, manageShelfList);
         addBookDialog.setVisible(true);
         addBookDialog.addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
@@ -584,7 +687,7 @@ public class LibrarianFrame extends javax.swing.JFrame {
     private void editBtnManageBooksActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editBtnManageBooksActionPerformed
         SearchBook selectedBook = manageBookList.getBook(manageBookTable.getSelectedRow());
         
-        EditBookDialog editBookDialog = new EditBookDialog(this, true, selectedBook);
+        EditBookDialog editBookDialog = new EditBookDialog(this, true, selectedBook, manageShelfList);
         editBookDialog.setVisible(true);
         editBookDialog.addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
@@ -603,7 +706,7 @@ public class LibrarianFrame extends javax.swing.JFrame {
                 "Confirmation",
                 JOptionPane.YES_NO_OPTION);
         if(x==JOptionPane.NO_OPTION){
-            
+            return;
         }
         
         SQLCore.deleteBook(selectedBook.getIsbn());
@@ -651,12 +754,87 @@ public class LibrarianFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_manageAuthorBtnManageBooksActionPerformed
 
     private void manageCopiesBtnManageBooksActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_manageCopiesBtnManageBooksActionPerformed
-        // TODO add your handling code here:
+        SearchBook selectedBook = manageBookList.getBook(manageBookTable.getSelectedRow());
+        
+        ManageCopiesDialog manageCopiesDialog = new ManageCopiesDialog(this, true, selectedBook);
+        manageCopiesDialog.setVisible(true);
+        manageCopiesDialog.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosed(java.awt.event.WindowEvent e) {
+                thisInstance.refreshTables();
+            }
+        });
     }//GEN-LAST:event_manageCopiesBtnManageBooksActionPerformed
 
-    private void manageLoansButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_manageLoansButton1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_manageLoansButton1ActionPerformed
+    private void manageShelvesBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_manageShelvesBtnActionPerformed
+        cardLayout.show(panelCards,"manageShelvesPanelCard");
+    }//GEN-LAST:event_manageShelvesBtnActionPerformed
+
+    private void addShelfBtnManageShelvesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addShelfBtnManageShelvesActionPerformed
+        String input = JOptionPane.showInputDialog(this,
+                "Input shelf capacity");
+        
+        SQLCore.addShelf(Integer.parseInt(input));
+        
+        JOptionPane.showMessageDialog(this,
+                "You have successfully added a new shelf",
+                "Success",
+                JOptionPane.INFORMATION_MESSAGE);
+        
+        refreshTables();
+    }//GEN-LAST:event_addShelfBtnManageShelvesActionPerformed
+
+    private void editShelfManageShelvesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editShelfManageShelvesActionPerformed
+        Shelf selectedShelf = manageShelfList.getShelf(manageShelfTable.getSelectedRow());
+        
+        int input = Integer.parseInt(JOptionPane.showInputDialog(this,
+                "Input new shelf capacity"));
+        
+        if(input < selectedShelf.getContains()){
+            JOptionPane.showMessageDialog(this, 
+                    "New capacity is less than books contained",
+                    "Invalid Capacity",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        SQLCore.editShelf(selectedShelf.getId(),input);
+        
+        JOptionPane.showMessageDialog(this,
+                "You have successfully edited this shelf",
+                "Success",
+                JOptionPane.INFORMATION_MESSAGE);
+        
+        refreshTables();
+    }//GEN-LAST:event_editShelfManageShelvesActionPerformed
+
+    private void deleteShelfManageShelvesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteShelfManageShelvesActionPerformed
+        Shelf selectedShelf = manageShelfList.getShelf(manageShelfTable.getSelectedRow());
+        
+        if(selectedShelf.getContains() > 0){
+            JOptionPane.showMessageDialog(this,
+                    "This shelf still has books in it",
+                    "Invalid Operation",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        int x = JOptionPane.showConfirmDialog(null,
+                "Are you sure you want to delete this shelf?\n",
+                "Confirmation",
+                JOptionPane.YES_NO_OPTION);
+        if(x==JOptionPane.NO_OPTION){
+            return;
+        }
+        
+        SQLCore.deleteShelf(selectedShelf.getId());
+        JOptionPane.showMessageDialog(this,
+                "You have successfully deleted this shelf",
+                "Success",
+                JOptionPane.INFORMATION_MESSAGE);
+        
+        refreshTables();
+    }//GEN-LAST:event_deleteShelfManageShelvesActionPerformed
 
     public void refreshTables(){
         initTableModels();
@@ -675,6 +853,10 @@ public class LibrarianFrame extends javax.swing.JFrame {
         manageBookModel = new LibraryTableModel();
         manageBookModel.setColumnIdentifiers(new String[] {"Title","Authors","ISBN", "Year Published", "Copies", "Shelf ID"});
         manageBookTable.setModel(manageBookModel);
+        
+        manageShelfModel = new LibraryTableModel();
+        manageShelfModel.setColumnIdentifiers(new String[] {"Shelf No.","Capacity","Number of Books"});
+        manageShelfTable.setModel(manageShelfModel);
     }
     
     public void fillTables(){
@@ -714,6 +896,17 @@ public class LibrarianFrame extends javax.swing.JFrame {
             }
         }
         
+        manageShelfList = new ShelfView();
+        manageShelfList.fill();
+        
+        ArrayList<Shelf> shelfList = manageShelfList.getShelves();
+        
+        if(shelfList != null){
+            for(Shelf item: shelfList){
+                System.out.println(item);
+                manageShelfModel.addRow(item.toRow());
+            }
+        }
     }
     
     /**
@@ -763,20 +956,25 @@ public class LibrarianFrame extends javax.swing.JFrame {
     private javax.swing.JPanel LibrarianWindowJLabel;
     private javax.swing.JButton addBtnManageBooks;
     private javax.swing.JButton addButtonManageUsers;
+    private javax.swing.JButton addShelfBtnManageShelves;
     private javax.swing.JButton deleteBtnManageBooks;
     private javax.swing.JButton deleteButtonManageUsers;
+    private javax.swing.JButton deleteShelfManageShelves;
     private javax.swing.JButton editBtnManageBooks;
     private javax.swing.JButton editButtonManageUsers;
+    private javax.swing.JButton editShelfManageShelves;
     private javax.swing.JLabel greetingLbl;
     private javax.swing.JLabel greetingNameLbl;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane4;
+    private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JSplitPane jSplitPane2;
     private javax.swing.JButton loanBtnPendingLoans;
     private javax.swing.JButton logoutButton;
@@ -786,8 +984,10 @@ public class LibrarianFrame extends javax.swing.JFrame {
     private javax.swing.JPanel manageBooksPanelCard;
     private javax.swing.JButton manageCopiesBtnManageBooks;
     private javax.swing.JButton manageLoansButton;
-    private javax.swing.JButton manageLoansButton1;
     private javax.swing.JPanel manageLoansPanelCard;
+    private javax.swing.JTable manageShelfTable;
+    private javax.swing.JButton manageShelvesBtn;
+    private javax.swing.JPanel manageShelvesPanelCard;
     private javax.swing.JPanel manageUserPanelCard;
     private javax.swing.JButton manageUsersButton;
     private javax.swing.JPanel panelCards;

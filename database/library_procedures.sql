@@ -60,7 +60,7 @@ CREATE OR REPLACE FUNCTION next_copy_no(
     p_isbn books.isbn%type
 ) RETURN NUMBER
 IS
-prev_copy_no NUMBER := 1;
+prev_copy_no NUMBER := 0;
 CURSOR c_book
     IS SELECT copy_no FROM books
     WHERE isbn = p_isbn;
@@ -233,6 +233,9 @@ IS
 BEGIN
     DELETE FROM books
     WHERE isbn = p_isbn;
+    
+    DELETE FROM book_author
+    WHERE book_isbn = p_isbn;
 END delete_book;
 
 /
@@ -301,6 +304,10 @@ BEGIN
         year_published = p_year,
         shelf_id = p_shelfid
     WHERE isbn = p_oldisbn;
+    
+    UPDATE book_author
+    SET book_isbn = p_isbn
+    WHERE book_isbn = p_oldisbn;
 END edit_book;
     
 /
@@ -313,6 +320,7 @@ IS
 BEGIN
     DELETE FROM books
     WHERE isbn = p_isbn AND copy_no = p_copyno;
+    
 END delete_copy;
 
 /
@@ -348,3 +356,72 @@ BEGIN
     DELETE FROM shelves
     WHERE shelf_id = p_id;
 END delete_shelf;
+
+/
+
+CREATE OR REPLACE PROCEDURE edit_author(
+    p_name authors.author_name%type,
+    p_id authors.author_id%type
+)
+IS
+BEGIN
+    UPDATE authors
+    SET author_name = p_name
+    WHERE author_id = p_id;
+END edit_author;
+
+/
+
+CREATE OR REPLACE FUNCTION get_shelf_contains(
+    p_shelfid shelves.shelf_id%type
+)
+RETURN NUMBER
+IS
+    v_ctr NUMBER := 0;
+    CURSOR c_book IS    
+    SELECT b.book_id FROM books b, shelves s
+    WHERE b.shelf_id = s.shelf_id AND s.shelf_id = p_shelfid;
+BEGIN
+    FOR r_book in c_book LOOP
+        v_ctr := v_ctr + 1;
+    END LOOP;
+    
+    RETURN v_ctr;
+END get_shelf_contains;
+
+/
+
+CREATE OR REPLACE FUNCTION isbn_exists(
+    p_isbn books.isbn%type
+)
+RETURN NUMBER
+IS
+    CURSOR c_book IS
+    SELECT isbn FROM books;
+BEGIN
+    FOR r_book in c_book LOOP
+        IF r_book.isbn = p_isbn THEN
+            RETURN 1;
+        END IF;
+    END LOOP;
+    
+    RETURN 0;
+END isbn_exists;
+
+/
+
+CREATE OR REPLACE FUNCTION compute_fine(
+    p_date book_transactions.transaction_date%type
+)
+RETURN NUMBER
+IS
+    v_fine library_users.unpaid_fines%type;
+    v_duration NUMBER(6,0);
+BEGIN
+    v_duration := TO_NUMBER(SYSDATE - TO_DATE(p_date));
+    v_fine := v_duration * 20;
+    
+    RETURN v_fine;
+END compute_fine;
+    
+/

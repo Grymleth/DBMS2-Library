@@ -6,7 +6,13 @@
 package gui;
 
 import customclass.SearchBook;
+import customclass.Shelf;
+import customclass.ShelfView;
 import java.awt.event.WindowEvent;
+import java.util.ArrayList;
+import javax.swing.ComboBoxModel;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import oracledb.SQLCore;
@@ -16,7 +22,9 @@ import oracledb.SQLCore;
  * @author aevan
  */
 public class AddBookDialog extends javax.swing.JDialog {
-
+    ShelfView shelfList;
+    
+    ComboBoxModel shelfModel;
     /**
      * Creates new form AddBookDialog
      */
@@ -25,6 +33,15 @@ public class AddBookDialog extends javax.swing.JDialog {
         initComponents();
         this.setLocationRelativeTo(null);
         this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+    }
+    
+    public AddBookDialog(java.awt.Frame parent, boolean modal, ShelfView shelfList){
+        this(parent, modal);
+        this.shelfList = shelfList;
+        this.shelfList.fill();
+        initComboBox();
+        
+        
     }
 
     /**
@@ -39,7 +56,6 @@ public class AddBookDialog extends javax.swing.JDialog {
         registerPane = new javax.swing.JPanel();
         bookTitleLbl = new javax.swing.JPanel();
         shelfLbl = new javax.swing.JLabel();
-        shelfFld = new javax.swing.JTextField();
         addBtn = new javax.swing.JButton();
         cancelBtn = new javax.swing.JButton();
         fNameLbl = new javax.swing.JLabel();
@@ -48,6 +64,7 @@ public class AddBookDialog extends javax.swing.JDialog {
         titleFld = new javax.swing.JTextField();
         yearFld = new javax.swing.JTextField();
         isbnFld = new javax.swing.JTextField();
+        shelfCombo = new javax.swing.JComboBox<>();
         titlePane = new javax.swing.JPanel();
         exitBtn = new javax.swing.JLabel();
         titleLbl = new javax.swing.JLabel();
@@ -60,8 +77,6 @@ public class AddBookDialog extends javax.swing.JDialog {
         shelfLbl.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         shelfLbl.setForeground(new java.awt.Color(255, 255, 255));
         shelfLbl.setText("Shelf No:");
-
-        shelfFld.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
 
         addBtn.setBackground(new java.awt.Color(6, 82, 221));
         addBtn.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
@@ -101,39 +116,34 @@ public class AddBookDialog extends javax.swing.JDialog {
 
         isbnFld.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
 
+        shelfCombo.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        shelfCombo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "1", "2", "3", "4", "5" }));
+
         javax.swing.GroupLayout bookTitleLblLayout = new javax.swing.GroupLayout(bookTitleLbl);
         bookTitleLbl.setLayout(bookTitleLblLayout);
         bookTitleLblLayout.setHorizontalGroup(
             bookTitleLblLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(bookTitleLblLayout.createSequentialGroup()
-                .addGroup(bookTitleLblLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(bookTitleLblLayout.createSequentialGroup()
-                        .addGap(134, 134, 134)
-                        .addComponent(fNameLbl))
-                    .addComponent(shelfLbl, javax.swing.GroupLayout.Alignment.TRAILING))
-                .addGap(18, 18, 18)
-                .addGroup(bookTitleLblLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(bookTitleLblLayout.createSequentialGroup()
-                        .addComponent(titleFld)
-                        .addGap(39, 39, 39))
-                    .addGroup(bookTitleLblLayout.createSequentialGroup()
-                        .addGroup(bookTitleLblLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addGroup(bookTitleLblLayout.createSequentialGroup()
-                                .addComponent(cancelBtn)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(addBtn))
-                            .addComponent(shelfFld, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-            .addGroup(bookTitleLblLayout.createSequentialGroup()
-                .addGap(63, 63, 63)
+                .addContainerGap()
                 .addGroup(bookTitleLblLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(isbnLbl)
-                    .addComponent(yearLbl))
-                .addGap(18, 18, 18)
+                    .addComponent(yearLbl)
+                    .addComponent(fNameLbl)
+                    .addComponent(shelfLbl))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(bookTitleLblLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(titleFld)
+                    .addComponent(yearFld)
                     .addComponent(isbnFld)
-                    .addComponent(yearFld))
-                .addGap(40, 40, 40))
+                    .addGroup(bookTitleLblLayout.createSequentialGroup()
+                        .addGroup(bookTitleLblLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(bookTitleLblLayout.createSequentialGroup()
+                                .addComponent(cancelBtn)
+                                .addGap(29, 29, 29)
+                                .addComponent(addBtn))
+                            .addComponent(shelfCombo, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addGap(106, 106, 106))
         );
         bookTitleLblLayout.setVerticalGroup(
             bookTitleLblLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -150,10 +160,10 @@ public class AddBookDialog extends javax.swing.JDialog {
                 .addGroup(bookTitleLblLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(yearFld, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(yearLbl))
-                .addGap(18, 18, 18)
-                .addGroup(bookTitleLblLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(shelfFld, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(shelfLbl))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(bookTitleLblLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(shelfLbl)
+                    .addComponent(shelfCombo, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(bookTitleLblLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(addBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -221,9 +231,8 @@ public class AddBookDialog extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void addBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addBtnActionPerformed
-
         try{
-            if(emptyFields(shelfFld, titleFld, isbnFld, yearFld)){
+            if(emptyFields(titleFld, isbnFld, yearFld)){
                 throw new Exception("Empty Fields!");
             }
         }
@@ -235,18 +244,35 @@ public class AddBookDialog extends javax.swing.JDialog {
 
             return;
         }
-
+        Shelf selectedShelf = shelfList.getShelf(shelfCombo.getSelectedIndex());
+        
+        if(selectedShelf.getContains() + 1 > selectedShelf.getCapacity()){
+            JOptionPane.showMessageDialog(this,
+                "Adding this book will overflow the shelf",
+                "Shelf Overflow",
+                JOptionPane.ERROR_MESSAGE);
+            
+            return;
+        }
+        
+        if(SQLCore.isbnExists(isbnFld.getText())){
+            JOptionPane.showMessageDialog(this, 
+                    "ISBN is same or already exists",
+                    "Invalid ISBN",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
         SearchBook book = new SearchBook(titleFld.getText(), 
                 isbnFld.getText(),
                 Integer.parseInt(yearFld.getText()),
-                Integer.parseInt(shelfFld.getText()));
+                selectedShelf.getId());
 
         int x = JOptionPane.showConfirmDialog(null, "Are you sure?","Confirm",JOptionPane.YES_NO_OPTION);
 
         if(x==JOptionPane.NO_OPTION){
             return;
         }
-
+        
         SQLCore.addBook(book);
         JOptionPane.showMessageDialog(this,
             "You have successfully added a book",
@@ -329,7 +355,7 @@ public class AddBookDialog extends javax.swing.JDialog {
     private javax.swing.JTextField isbnFld;
     private javax.swing.JLabel isbnLbl;
     private javax.swing.JPanel registerPane;
-    private javax.swing.JTextField shelfFld;
+    private javax.swing.JComboBox<String> shelfCombo;
     private javax.swing.JLabel shelfLbl;
     private javax.swing.JTextField titleFld;
     private javax.swing.JLabel titleLbl;
@@ -337,4 +363,10 @@ public class AddBookDialog extends javax.swing.JDialog {
     private javax.swing.JTextField yearFld;
     private javax.swing.JLabel yearLbl;
     // End of variables declaration//GEN-END:variables
+
+    private void initComboBox() {
+        shelfModel = new DefaultComboBoxModel(shelfList.getIdArray());
+        shelfCombo.setModel(shelfModel);
+        
+    }
 }

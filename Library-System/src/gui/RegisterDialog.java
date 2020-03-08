@@ -6,6 +6,7 @@
 package gui;
 
 import customclass.LibUser;
+import customclass.LibUserView;
 import java.awt.event.WindowEvent;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
@@ -17,7 +18,7 @@ import oracledb.SQLCore;
  */
 public class RegisterDialog extends javax.swing.JDialog {
 
-    
+    LibUserView userList;
     /**
      * Creates new form RegisterDialog
      */
@@ -25,6 +26,9 @@ public class RegisterDialog extends javax.swing.JDialog {
         super(parent, modal);
         initComponents();
         this.setLocationRelativeTo(null);
+        
+        this.userList = new LibUserView();
+        userList.fill();
     }
     
     public RegisterDialog(java.awt.Frame parent, boolean modal, String window){
@@ -33,7 +37,6 @@ public class RegisterDialog extends javax.swing.JDialog {
         if(window.equals("Librarian")){
             titleLbl.setText("Add User");
         }
-        
         this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
     }
     /**
@@ -286,6 +289,8 @@ public class RegisterDialog extends javax.swing.JDialog {
 
     private void regBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_regBtnActionPerformed
         char librarian = librarianCheck.isSelected() ? 'Y' : 'N';
+        String password;
+        String confirm;
 
         try{
             if(emptyFields(userFld, fNameFld, lNameFld, addressFld)){
@@ -300,12 +305,32 @@ public class RegisterDialog extends javax.swing.JDialog {
             
             return;
         }
-
-        LibUser user = new LibUser(userFld.getText(),
+        
+        LibUser user = userList.findUserByLoginId(userFld.getText());
+        if(user != null){
+            JOptionPane.showMessageDialog(this, 
+                    "Username already exists",
+                    "Invalid Username",
+                    JOptionPane.ERROR_MESSAGE);
+            
+            return;
+        }
+        user = new LibUser(userFld.getText(),
             fNameFld.getText(), lNameFld.getText(),
             addressFld.getText(),
             librarian);
-
+        
+        password = new String(passFld.getPassword());
+        confirm = new String(confirmPassFld.getPassword());
+        
+        if(!password.equals(confirm)){
+            JOptionPane.showMessageDialog(this, 
+                    "Password does not match",
+                    "Invalid Confirm Password",
+                    JOptionPane.ERROR_MESSAGE);
+            
+            return;
+        }
         
         int x = JOptionPane.showConfirmDialog(null, "Are you sure?","Confirm",JOptionPane.YES_NO_OPTION);
 

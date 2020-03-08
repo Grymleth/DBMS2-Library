@@ -7,7 +7,11 @@ package gui;
 
 import customclass.LibUser;
 import customclass.SearchBook;
+import customclass.Shelf;
+import customclass.ShelfView;
 import java.awt.event.WindowEvent;
+import javax.swing.ComboBoxModel;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
@@ -19,6 +23,8 @@ import oracledb.SQLCore;
  */
 public class EditBookDialog extends javax.swing.JDialog {
     private SearchBook book;
+    private ShelfView shelfList;
+    ComboBoxModel shelfModel;
     /**
      * Creates new form EditBookDialog
      */
@@ -29,9 +35,12 @@ public class EditBookDialog extends javax.swing.JDialog {
         this.setLocationRelativeTo(null);
     }
     
-    public EditBookDialog(java.awt.Frame parent, boolean modal, SearchBook book){
+    public EditBookDialog(java.awt.Frame parent, boolean modal, SearchBook book, ShelfView shelfList){
         this(parent, modal);
         this.book = book;
+        this.shelfList = shelfList;
+        this.shelfList.fill();
+        initComboBox();
         initFields();
     };
 
@@ -47,7 +56,6 @@ public class EditBookDialog extends javax.swing.JDialog {
         registerPane = new javax.swing.JPanel();
         contentPane = new javax.swing.JPanel();
         shelfLbl = new javax.swing.JLabel();
-        shelfFld = new javax.swing.JTextField();
         regBtn = new javax.swing.JButton();
         cancelBtn = new javax.swing.JButton();
         titleLbl = new javax.swing.JLabel();
@@ -59,7 +67,7 @@ public class EditBookDialog extends javax.swing.JDialog {
         changeTitleBtn = new javax.swing.JButton();
         changeIsbnBtn = new javax.swing.JButton();
         changeYearBtn = new javax.swing.JButton();
-        changeShelfBtn = new javax.swing.JButton();
+        shelfCombo = new javax.swing.JComboBox<>();
         titlePane = new javax.swing.JPanel();
         exitBtn = new javax.swing.JLabel();
         editBookTitleLbl = new javax.swing.JLabel();
@@ -74,9 +82,6 @@ public class EditBookDialog extends javax.swing.JDialog {
         shelfLbl.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         shelfLbl.setForeground(new java.awt.Color(255, 255, 255));
         shelfLbl.setText("Shelf No.");
-
-        shelfFld.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        shelfFld.setEnabled(false);
 
         regBtn.setBackground(new java.awt.Color(6, 82, 221));
         regBtn.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
@@ -143,30 +148,21 @@ public class EditBookDialog extends javax.swing.JDialog {
             }
         });
 
-        changeShelfBtn.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
-        changeShelfBtn.setText("Change");
-        changeShelfBtn.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                changeShelfBtnActionPerformed(evt);
-            }
-        });
+        shelfCombo.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        shelfCombo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "1", "2", "3", "4", "5" }));
 
         javax.swing.GroupLayout contentPaneLayout = new javax.swing.GroupLayout(contentPane);
         contentPane.setLayout(contentPaneLayout);
         contentPaneLayout.setHorizontalGroup(
             contentPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(contentPaneLayout.createSequentialGroup()
+                .addContainerGap()
                 .addGroup(contentPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(shelfLbl)
                     .addGroup(contentPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(contentPaneLayout.createSequentialGroup()
-                            .addContainerGap()
-                            .addComponent(yearLbl))
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, contentPaneLayout.createSequentialGroup()
-                            .addContainerGap()
-                            .addGroup(contentPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(isbnLbl, javax.swing.GroupLayout.Alignment.TRAILING)
-                                .addComponent(titleLbl, javax.swing.GroupLayout.Alignment.TRAILING)))))
+                        .addComponent(yearLbl)
+                        .addComponent(isbnLbl, javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addComponent(titleLbl, javax.swing.GroupLayout.Alignment.TRAILING)))
                 .addGap(18, 18, 18)
                 .addGroup(contentPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(contentPaneLayout.createSequentialGroup()
@@ -181,15 +177,12 @@ public class EditBookDialog extends javax.swing.JDialog {
                         .addComponent(isbnFld, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(changeIsbnBtn))
-                    .addGroup(contentPaneLayout.createSequentialGroup()
-                        .addGroup(contentPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addGroup(contentPaneLayout.createSequentialGroup()
-                                .addComponent(cancelBtn)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(regBtn))
-                            .addComponent(shelfFld, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(changeShelfBtn)))
+                    .addGroup(contentPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(contentPaneLayout.createSequentialGroup()
+                            .addComponent(cancelBtn)
+                            .addGap(26, 26, 26)
+                            .addComponent(regBtn))
+                        .addComponent(shelfCombo, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(50, Short.MAX_VALUE))
         );
         contentPaneLayout.setVerticalGroup(
@@ -218,8 +211,7 @@ public class EditBookDialog extends javax.swing.JDialog {
                 .addGap(18, 18, 18)
                 .addGroup(contentPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(shelfLbl)
-                    .addComponent(shelfFld, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(changeShelfBtn))
+                    .addComponent(shelfCombo, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(contentPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(regBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -267,7 +259,7 @@ public class EditBookDialog extends javax.swing.JDialog {
 
     private void regBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_regBtnActionPerformed
         try{
-            if(emptyFields(shelfFld, titleFld, isbnFld, yearFld)){
+            if(emptyFields(titleFld, isbnFld, yearFld)){
                 throw new Exception("Empty Fields!");
             }
         }
@@ -280,15 +272,35 @@ public class EditBookDialog extends javax.swing.JDialog {
             return;
         }
         
+        Shelf selectedShelf = shelfList.getShelf(shelfCombo.getSelectedIndex());
+        
+        if(selectedShelf.getContains() + book.getCopies() > selectedShelf.getCapacity()){
+            JOptionPane.showMessageDialog(this,
+                "Adding this book will overflow the shelf",
+                "Shelf Overflow",
+                JOptionPane.ERROR_MESSAGE);
+            
+            return;
+        }
+        
+        if(SQLCore.isbnExists(isbnFld.getText())){
+            JOptionPane.showMessageDialog(this, 
+                    "ISBN is same or already exists",
+                    "Invalid ISBN",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
         int x = JOptionPane.showConfirmDialog(null, "Are you sure?","Confirm",JOptionPane.YES_NO_OPTION);
 
         if(x==JOptionPane.NO_OPTION){
             return;
         }
+       
         String[] details = {isbnFld.getText(),
             titleFld.getText(),
             yearFld.getText(),
-            shelfFld.getText()};
+            Integer.toString(selectedShelf.getId())};
         
         SQLCore.editBook(book.getIsbn(), details);
 
@@ -316,10 +328,6 @@ public class EditBookDialog extends javax.swing.JDialog {
         yearFld.setEnabled(true);
     }//GEN-LAST:event_changeYearBtnActionPerformed
 
-    private void changeShelfBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_changeShelfBtnActionPerformed
-        shelfFld.setEnabled(true);
-    }//GEN-LAST:event_changeShelfBtnActionPerformed
-
     private void exitBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_exitBtnMouseClicked
         cancelBtn.doClick();
     }//GEN-LAST:event_exitBtnMouseClicked
@@ -335,7 +343,6 @@ public class EditBookDialog extends javax.swing.JDialog {
     }
     
     private void initFields() {
-        shelfFld.setText(Integer.toString(book.getShelfId()));
         titleFld.setText(book.getTitle());
         isbnFld.setText(book.getIsbn());
         yearFld.setText(Integer.toString(book.getYear()));
@@ -387,7 +394,6 @@ public class EditBookDialog extends javax.swing.JDialog {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton cancelBtn;
     private javax.swing.JButton changeIsbnBtn;
-    private javax.swing.JButton changeShelfBtn;
     private javax.swing.JButton changeTitleBtn;
     private javax.swing.JButton changeYearBtn;
     private javax.swing.JPanel contentPane;
@@ -397,7 +403,7 @@ public class EditBookDialog extends javax.swing.JDialog {
     private javax.swing.JLabel isbnLbl;
     private javax.swing.JButton regBtn;
     private javax.swing.JPanel registerPane;
-    private javax.swing.JTextField shelfFld;
+    private javax.swing.JComboBox<String> shelfCombo;
     private javax.swing.JLabel shelfLbl;
     private javax.swing.JTextField titleFld;
     private javax.swing.JLabel titleLbl;
@@ -405,4 +411,10 @@ public class EditBookDialog extends javax.swing.JDialog {
     private javax.swing.JTextField yearFld;
     private javax.swing.JLabel yearLbl;
     // End of variables declaration//GEN-END:variables
+
+    private void initComboBox() {
+        shelfModel = new DefaultComboBoxModel(shelfList.getIdArray());
+        shelfCombo.setModel(shelfModel);
+        
+    }
 }
