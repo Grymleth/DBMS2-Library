@@ -52,9 +52,7 @@ public class SearchBookView {
                 return item;
             }
         }
-        
         return null;
-        
     }
     
     public static void main(String[] args) {

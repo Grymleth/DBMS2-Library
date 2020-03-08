@@ -89,6 +89,7 @@ public class LibrarianFrame extends javax.swing.JFrame {
         addBtnManageBooks = new javax.swing.JButton();
         editBtnManageBooks = new javax.swing.JButton();
         deleteBtnManageBooks = new javax.swing.JButton();
+        manageAuthorBtnManageBooks = new javax.swing.JButton();
         manageLoansPanelCard = new javax.swing.JPanel();
         jLabel5 = new javax.swing.JLabel();
         jScrollPane4 = new javax.swing.JScrollPane();
@@ -347,18 +348,27 @@ public class LibrarianFrame extends javax.swing.JFrame {
             }
         });
 
+        manageAuthorBtnManageBooks.setText("Edit Authors");
+        manageAuthorBtnManageBooks.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                manageAuthorBtnManageBooksActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout manageBooksPanelCardLayout = new javax.swing.GroupLayout(manageBooksPanelCard);
         manageBooksPanelCard.setLayout(manageBooksPanelCardLayout);
         manageBooksPanelCardLayout.setHorizontalGroup(
             manageBooksPanelCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(manageBooksPanelCardLayout.createSequentialGroup()
-                .addGroup(manageBooksPanelCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addGroup(manageBooksPanelCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addGroup(manageBooksPanelCardLayout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(addBtnManageBooks, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(editBtnManageBooks, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGap(18, 18, 18)
+                        .addComponent(manageAuthorBtnManageBooks, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
                         .addComponent(deleteBtnManageBooks, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, manageBooksPanelCardLayout.createSequentialGroup()
                         .addGap(24, 24, 24)
@@ -380,7 +390,8 @@ public class LibrarianFrame extends javax.swing.JFrame {
                 .addGroup(manageBooksPanelCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(addBtnManageBooks)
                     .addComponent(editBtnManageBooks)
-                    .addComponent(deleteBtnManageBooks))
+                    .addComponent(deleteBtnManageBooks)
+                    .addComponent(manageAuthorBtnManageBooks))
                 .addGap(51, 51, 51))
         );
 
@@ -599,6 +610,19 @@ public class LibrarianFrame extends javax.swing.JFrame {
         refreshTables();
     }//GEN-LAST:event_loanBtnPendingLoansActionPerformed
 
+    private void manageAuthorBtnManageBooksActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_manageAuthorBtnManageBooksActionPerformed
+        SearchBook selectedBook = manageBookList.getBook(manageBookTable.getSelectedRow());
+        
+        ManageAuthorDialog authorDialog = new ManageAuthorDialog(this, true, selectedBook);
+        authorDialog.setVisible(true);
+        authorDialog.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosed(java.awt.event.WindowEvent e) {
+                thisInstance.refreshTables();
+            }
+        });
+    }//GEN-LAST:event_manageAuthorBtnManageBooksActionPerformed
+
     public void refreshTables(){
         initTableModels();
         fillTables();
@@ -721,6 +745,7 @@ public class LibrarianFrame extends javax.swing.JFrame {
     private javax.swing.JSplitPane jSplitPane2;
     private javax.swing.JButton loanBtnPendingLoans;
     private javax.swing.JButton logoutButton;
+    private javax.swing.JButton manageAuthorBtnManageBooks;
     private javax.swing.JTable manageBookTable;
     private javax.swing.JButton manageBooksButton;
     private javax.swing.JPanel manageBooksPanelCard;

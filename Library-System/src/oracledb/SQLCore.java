@@ -1,4 +1,5 @@
 package oracledb;
+import customclass.LibAuthor;
 import customclass.SearchBook;
 import customclass.SearchBookView;
 import gui.LoginFrame;
@@ -118,7 +119,7 @@ public class SQLCore extends SQLDriver {
         
         String statement = "SELECT b.title, a.author_name, b.isbn, b.year_published, b.copy_no, b.status, b.shelf_id "
                 + "FROM books b, authors a, book_author ba "
-                + "WHERE b.isbn = ba.book_isbn AND a.author_id = ba.author_id";
+                + "WHERE b.isbn = ba.book_isbn AND a.author_id = ba.author_id ORDER BY isbn";
         String isbn;
         SearchBook bookObj;
         String author;
@@ -258,6 +259,8 @@ public class SQLCore extends SQLDriver {
         return userList;
     }
     
+    
+    
     public static ArrayList<PendingLoan> getPendingLoanView(){
         ArrayList<PendingLoan> pendingList = new ArrayList<>();
         String author;
@@ -306,6 +309,31 @@ public class SQLCore extends SQLDriver {
         
         System.out.println("Success pendingView");
         return pendingList;
+    }
+    
+    public static ArrayList<LibAuthor> getAuthors(String isbn){
+        ArrayList<LibAuthor> authorList = new ArrayList<>();
+        String statement = "SELECT a.author_id, a.author_name "
+                + "FROM authors a, book_author ba "
+                + "WHERE a.author_id = ba.author_id AND ba.book_isbn = ? ORDER BY author_id";
+        LibAuthor authorObj;
+        
+        try (Connection con = DriverManager.getConnection(CONNECTION_URL, USER, PASS);
+                PreparedStatement query = con.prepareStatement(statement);) {
+            query.setString(1, isbn);
+            ResultSet res = query.executeQuery();
+            while(res.next()){
+                authorObj = new LibAuthor(res.getInt("author_id"), res.getString("author_name"));
+                authorList.add(authorObj);
+            }
+        } catch (SQLException ex) {
+            System.out.println(ex.getLocalizedMessage());
+            System.out.println("Error getAuthorView");
+            return null;
+        }
+        
+        System.out.println("Success getAuthorView");
+        return authorList;
     }
     
     public static void borrowBook(LibUser user, SearchBook book){
@@ -434,6 +462,40 @@ public class SQLCore extends SQLDriver {
         }
         
         System.out.println("Success deleting book");
+    }
+    
+    public static void addBookAuthor(String authorName, String isbn){
+        String statement = "{call add_book_author(?,?)}";
+        
+        try(Connection con = DriverManager.getConnection(CONNECTION_URL, USER, PASS);
+                CallableStatement query = con.prepareCall(statement);
+                ){
+            query.setString(1,authorName);
+            query.setString(2, isbn);
+            query.execute();
+        }catch(SQLException ex){
+            System.out.println("Error addBookAuthor");
+            return;
+        }
+        
+        System.out.println("Success addBookAuthor");
+    }
+    
+    public static void deleteBookAuthor(int authorId, String isbn){
+        String statement = "{call delete_book_author(?,?)}";
+        
+        try(Connection con = DriverManager.getConnection(CONNECTION_URL, USER, PASS);
+                CallableStatement query = con.prepareCall(statement);
+                ){
+            query.setInt(1,authorId);
+            query.setString(2, isbn);
+            query.execute();
+        }catch(SQLException ex){
+            System.out.println("Error deleteBookAuthor");
+            return;
+        }
+        
+        System.out.println("Success dleteBookAuthor");
     }
 }
     

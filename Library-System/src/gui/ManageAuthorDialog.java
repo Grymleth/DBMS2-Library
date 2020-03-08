@@ -5,20 +5,40 @@
  */
 package gui;
 
+import customclass.LibAuthor;
+import customclass.LibAuthorView;
+import customclass.SearchBook;
+import java.awt.event.WindowEvent;
+import java.util.ArrayList;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import oracledb.SQLCore;
+
 /**
  *
  * @author aevan
  */
 public class ManageAuthorDialog extends javax.swing.JDialog {
-
+    private SearchBook book;
+    
+    private LibAuthorView authorList;
+    private DefaultTableModel authorModel;
     /**
      * Creates new form ManageAuthorDialog
      */
     public ManageAuthorDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+        this.setLocationRelativeTo(null);
     }
 
+    public ManageAuthorDialog(java.awt.Frame parent, boolean modal, SearchBook book) {
+        this(parent, modal);
+        this.book = book;
+        bookTitleText.setText(book.getTitle());
+        refreshTables();
+    }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -28,21 +48,246 @@ public class ManageAuthorDialog extends javax.swing.JDialog {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        registerPane = new javax.swing.JPanel();
+        contentPane = new javax.swing.JPanel();
+        finishBtn = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        authorTable = new javax.swing.JTable();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        bookTitlePane = new javax.swing.JPanel();
+        bookTitleLbl = new javax.swing.JLabel();
+        bookTitleText = new javax.swing.JLabel();
+        editBtn = new javax.swing.JButton();
+        addBtn = new javax.swing.JButton();
+        deleteBtn = new javax.swing.JButton();
+        titlePane = new javax.swing.JPanel();
+        exitBtn = new javax.swing.JLabel();
+        manageAuthorLbl = new javax.swing.JLabel();
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setUndecorated(true);
+        getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        contentPane.setBackground(new java.awt.Color(196, 229, 56));
+
+        finishBtn.setBackground(new java.awt.Color(6, 82, 221));
+        finishBtn.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        finishBtn.setForeground(new java.awt.Color(255, 255, 255));
+        finishBtn.setText("Finish");
+        finishBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                finishBtnActionPerformed(evt);
+            }
+        });
+
+        authorTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null}
+            },
+            new String [] {
+                "Author ID", "Author Name"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jScrollPane1.setViewportView(authorTable);
+
+        jScrollPane2.setBorder(null);
+
+        bookTitlePane.setBackground(new java.awt.Color(196, 229, 56));
+
+        bookTitleLbl.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
+        bookTitleLbl.setForeground(new java.awt.Color(255, 255, 255));
+        bookTitleLbl.setText("Title:");
+
+        bookTitleText.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
+        bookTitleText.setForeground(new java.awt.Color(255, 255, 255));
+
+        javax.swing.GroupLayout bookTitlePaneLayout = new javax.swing.GroupLayout(bookTitlePane);
+        bookTitlePane.setLayout(bookTitlePaneLayout);
+        bookTitlePaneLayout.setHorizontalGroup(
+            bookTitlePaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(bookTitlePaneLayout.createSequentialGroup()
+                .addComponent(bookTitleLbl)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(bookTitleText, javax.swing.GroupLayout.DEFAULT_SIZE, 317, Short.MAX_VALUE)
+                .addContainerGap())
         );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+        bookTitlePaneLayout.setVerticalGroup(
+            bookTitlePaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(bookTitlePaneLayout.createSequentialGroup()
+                .addGroup(bookTitlePaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(bookTitleLbl)
+                    .addComponent(bookTitleText, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(35, Short.MAX_VALUE))
         );
+
+        jScrollPane2.setViewportView(bookTitlePane);
+
+        editBtn.setBackground(new java.awt.Color(6, 82, 221));
+        editBtn.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        editBtn.setForeground(new java.awt.Color(255, 255, 255));
+        editBtn.setText("Edit");
+        editBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                editBtnActionPerformed(evt);
+            }
+        });
+
+        addBtn.setBackground(new java.awt.Color(6, 82, 221));
+        addBtn.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        addBtn.setForeground(new java.awt.Color(255, 255, 255));
+        addBtn.setText("Add");
+        addBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                addBtnActionPerformed(evt);
+            }
+        });
+
+        deleteBtn.setBackground(new java.awt.Color(6, 82, 221));
+        deleteBtn.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        deleteBtn.setForeground(new java.awt.Color(255, 255, 255));
+        deleteBtn.setText("Delete");
+        deleteBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                deleteBtnActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout contentPaneLayout = new javax.swing.GroupLayout(contentPane);
+        contentPane.setLayout(contentPaneLayout);
+        contentPaneLayout.setHorizontalGroup(
+            contentPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(contentPaneLayout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(contentPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(jScrollPane2)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, contentPaneLayout.createSequentialGroup()
+                        .addComponent(finishBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(110, 110, 110)
+                        .addGroup(contentPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(addBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGroup(contentPaneLayout.createSequentialGroup()
+                                .addComponent(deleteBtn)
+                                .addGap(0, 0, Short.MAX_VALUE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(editBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        contentPaneLayout.setVerticalGroup(
+            contentPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(contentPaneLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 207, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addGroup(contentPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(finishBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(addBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(editBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(deleteBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(42, Short.MAX_VALUE))
+        );
+
+        titlePane.setBackground(new java.awt.Color(18, 203, 196));
+        titlePane.setLayout(null);
+
+        exitBtn.setFont(new java.awt.Font("Tahoma", 1, 36)); // NOI18N
+        exitBtn.setForeground(new java.awt.Color(255, 255, 255));
+        exitBtn.setText("X");
+        exitBtn.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                exitBtnMouseClicked(evt);
+            }
+        });
+        titlePane.add(exitBtn);
+        exitBtn.setBounds(427, 13, 25, 44);
+
+        manageAuthorLbl.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
+        manageAuthorLbl.setForeground(new java.awt.Color(255, 255, 255));
+        manageAuthorLbl.setText("Manage Authors");
+        titlePane.add(manageAuthorLbl);
+        manageAuthorLbl.setBounds(20, 10, 220, 44);
+
+        javax.swing.GroupLayout registerPaneLayout = new javax.swing.GroupLayout(registerPane);
+        registerPane.setLayout(registerPaneLayout);
+        registerPaneLayout.setHorizontalGroup(
+            registerPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(titlePane, javax.swing.GroupLayout.PREFERRED_SIZE, 480, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(contentPane, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+        registerPaneLayout.setVerticalGroup(
+            registerPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(registerPaneLayout.createSequentialGroup()
+                .addComponent(titlePane, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, 0)
+                .addComponent(contentPane, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        );
+
+        getContentPane().add(registerPane, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void finishBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_finishBtnActionPerformed
+
+        int x = JOptionPane.showConfirmDialog(null, "Are you sure you want to exit?","Confirm",JOptionPane.YES_NO_OPTION);
+
+        if(x == JOptionPane.NO_OPTION){
+            return;
+        }
+        
+        this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
+    }//GEN-LAST:event_finishBtnActionPerformed
+
+    private void exitBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_exitBtnMouseClicked
+        finishBtn.doClick();
+    }//GEN-LAST:event_exitBtnMouseClicked
+
+    private void editBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editBtnActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_editBtnActionPerformed
+
+    private void addBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addBtnActionPerformed
+        String authorName = JOptionPane.showInputDialog(this, "Insert Author name","Input");
+        
+        if(authorName == null){
+            return;
+        }
+        
+        SQLCore.addBookAuthor(authorName, book.getIsbn());
+        
+        refreshTables();
+    }//GEN-LAST:event_addBtnActionPerformed
+
+    private void deleteBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteBtnActionPerformed
+        int choice = JOptionPane.showConfirmDialog(null, 
+                "Are you sure you want to delete author?",
+                "Confirm",
+                JOptionPane.YES_NO_OPTION);
+        
+        if(choice == JOptionPane.NO_OPTION){
+            return;
+        }
+        
+        LibAuthor selectedAuthor = authorList.getAuthor(authorTable.getSelectedRow());
+        
+        SQLCore.deleteBookAuthor(selectedAuthor.getId(), book.getIsbn());
+        
+        refreshTables();
+    }//GEN-LAST:event_deleteBtnActionPerformed
 
     /**
      * @param args the command line arguments
@@ -87,5 +332,54 @@ public class ManageAuthorDialog extends javax.swing.JDialog {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton addBtn;
+    private javax.swing.JTable authorTable;
+    private javax.swing.JLabel bookTitleLbl;
+    private javax.swing.JPanel bookTitlePane;
+    private javax.swing.JLabel bookTitleText;
+    private javax.swing.JPanel contentPane;
+    private javax.swing.JButton deleteBtn;
+    private javax.swing.JButton editBtn;
+    private javax.swing.JLabel exitBtn;
+    private javax.swing.JButton finishBtn;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JLabel manageAuthorLbl;
+    private javax.swing.JPanel registerPane;
+    private javax.swing.JPanel titlePane;
     // End of variables declaration//GEN-END:variables
+
+    private void refreshTables() {
+        initTableModels();
+        fillTables();
+    }
+
+    private void initTableModels() {
+        authorModel = new AuthorTableModel();
+        authorModel.setColumnIdentifiers(new String [] {"Author ID", "Author Name"});
+        authorTable.setModel(authorModel);
+    }
+
+    private void fillTables() {
+        authorList = new LibAuthorView();
+        authorList.fill(book.getIsbn());
+        
+        ArrayList<LibAuthor> theList = authorList.getAuthorList();
+        
+        if(theList != null){
+            for(LibAuthor item: theList){
+                System.out.println(item);
+                authorModel.addRow(item.toRow());
+            }
+        }
+        
+        
+    }
+    
+    public class AuthorTableModel extends DefaultTableModel{
+        @Override
+        public boolean isCellEditable(int rowIndex, int mColIndex){
+            return false;
+        }
+    }
 }

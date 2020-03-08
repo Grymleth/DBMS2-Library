@@ -233,7 +233,7 @@ public class AddBookDialog extends javax.swing.JDialog {
             return;
         }
 
-        SearchBook book = new SearchBook(titleFld.getText(),
+        SearchBook book = new SearchBook(titleFld.getText(), 
                 isbnFld.getText(),
                 Integer.parseInt(yearFld.getText()),
                 Integer.parseInt(shelfFld.getText()));
@@ -250,7 +250,14 @@ public class AddBookDialog extends javax.swing.JDialog {
             "Success",
             JOptionPane.INFORMATION_MESSAGE);
 
-        cancelBtn.doClick();
+        ManageAuthorDialog authorDialog = new ManageAuthorDialog(new javax.swing.JFrame(), true, book);
+        authorDialog.setVisible(true);
+        authorDialog.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosed(java.awt.event.WindowEvent e) {
+                cancelBtn.doClick();
+            }
+        });
     }//GEN-LAST:event_addBtnActionPerformed
 
     private void cancelBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelBtnActionPerformed

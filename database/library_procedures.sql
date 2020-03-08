@@ -117,18 +117,6 @@ BEGIN
 
 END add_author;
 
-/
-
-CREATE OR REPLACE PROCEDURE add_book_author(
-    p_authorid authors.author_id%type,
-    p_bookisbn books.isbn%type)
-IS
-BEGIN 
-    INSERT INTO book_author(author_id, book_isbn) VALUES(p_authorid, p_bookisbn);
-END add_book_author;
-
-/
-
 CREATE OR REPLACE PROCEDURE borrow_book (
     p_userid     library_users.user_id%TYPE,
     p_isbn     books.isbn%TYPE
@@ -245,3 +233,53 @@ BEGIN
     DELETE FROM books
     WHERE isbn = p_isbn;
 END delete_book;
+
+/
+
+CREATE OR REPLACE FUNCTION author_exists(
+    p_name authors.author_name%type
+)
+RETURN NUMBER
+IS 
+    CURSOR c_author IS SELECT author_name, author_id
+    FROM authors;
+BEGIN
+    FOR r_author in c_author LOOP
+        if r_author.author_name = p_name THEN
+            RETURN r_author.author_id;
+        END IF;
+    END LOOP;
+    
+    RETURN -1;
+END author_exists;
+
+/
+
+CREATE OR REPLACE PROCEDURE add_book_author(
+    p_name authors.author_name%type,
+    p_isbn books.isbn%type
+)
+IS
+    v_authorid authors.author_id%type;
+BEGIN
+    v_authorid := author_exists(p_name);
+    IF v_authorid = -1 THEN
+        add_author(p_name);
+        v_authorid := author_exists(p_name);
+        INSERT INTO book_author(author_id, book_isbn) VALUES(v_authorid, p_isbn);
+    ELSE
+        INSERT INTO book_author(author_id, book_isbn) VALUES(v_authorid, p_isbn);
+    END IF;
+END add_book_author;
+
+/
+
+CREATE OR REPLACE PROCEDURE delete_book_author(
+    p_authorid authors.author_id%type,
+    p_isbn books.isbn%type
+)
+IS
+BEGIN
+    DELETE FROM book_author
+    WHERE author_id = p_authorid AND book_isbn = p_isbn;
+END delete_book_author;
