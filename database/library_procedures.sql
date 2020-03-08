@@ -234,3 +234,14 @@ BEGIN
     SET status = 'On Loan'
     WHERE book_id = v_bookid;
 END;
+
+/
+
+CREATE OR REPLACE PROCEDURE delete_book(
+    p_isbn books.isbn%type
+)
+IS
+BEGIN
+    DELETE FROM books
+    WHERE isbn = p_isbn;
+END delete_book;

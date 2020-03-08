@@ -518,11 +518,11 @@ public class PatronFrame extends javax.swing.JFrame {
     
     public void initTableModels(){
         searchBooksModel = new BookTableModel();
-        searchBooksModel.setColumnIdentifiers(new String[] {"Title","Author","ISBN","Copies","Shelf No.","On Shelf","On Loan","On Hold"});
+        searchBooksModel.setColumnIdentifiers(new String[] {"Title","Author","ISBN","Year Published","Copies","Shelf No.","On Shelf","On Loan","On Hold"});
         searchBooksTable.setModel(searchBooksModel);
         
         myBooksModel = new BookTableModel();
-        myBooksModel.setColumnIdentifiers(new String[] {"Title","Author","ISBN","Copy No.","Transaction Date", "Status"});
+        myBooksModel.setColumnIdentifiers(new String[] {"Title","Author","ISBN","Year Published","Copy No.","Transaction Date", "Status"});
         myBooksTable.setModel(myBooksModel);
         
     }

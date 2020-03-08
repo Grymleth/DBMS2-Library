@@ -420,11 +420,11 @@
                               <Group type="103" groupAlignment="1" attributes="0">
                                   <Group type="102" alignment="1" attributes="0">
                                       <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
-                                      <Component id="addButtonManageBooks" min="-2" pref="101" max="-2" attributes="0"/>
+                                      <Component id="addBtnManageBooks" min="-2" pref="101" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="editButtonManageBooks" min="-2" pref="101" max="-2" attributes="0"/>
+                                      <Component id="editBtnManageBooks" min="-2" pref="101" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="deleteButtonManageBooks" min="-2" pref="101" max="-2" attributes="0"/>
+                                      <Component id="deleteBtnManageBooks" min="-2" pref="101" max="-2" attributes="0"/>
                                   </Group>
                                   <Group type="102" alignment="0" attributes="0">
                                       <EmptySpace min="-2" pref="24" max="-2" attributes="0"/>
@@ -450,9 +450,9 @@
                               <Component id="jScrollPane2" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="32767" attributes="0"/>
                               <Group type="103" groupAlignment="3" attributes="0">
-                                  <Component id="addButtonManageBooks" alignment="3" min="-2" max="-2" attributes="0"/>
-                                  <Component id="editButtonManageBooks" alignment="3" min="-2" max="-2" attributes="0"/>
-                                  <Component id="deleteButtonManageBooks" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="addBtnManageBooks" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="editBtnManageBooks" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="deleteBtnManageBooks" alignment="3" min="-2" max="-2" attributes="0"/>
                               </Group>
                               <EmptySpace min="-2" pref="51" max="-2" attributes="0"/>
                           </Group>
@@ -467,7 +467,7 @@
 
                       <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
                       <SubComponents>
-                        <Component class="javax.swing.JTable" name="jTable2">
+                        <Component class="javax.swing.JTable" name="manageBookTable">
                           <Properties>
                             <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
                               <Table columnCount="5" rowCount="4">
@@ -525,28 +525,28 @@
                         <Property name="text" type="java.lang.String" value="Manage Books"/>
                       </Properties>
                     </Component>
-                    <Component class="javax.swing.JButton" name="addButtonManageBooks">
+                    <Component class="javax.swing.JButton" name="addBtnManageBooks">
                       <Properties>
                         <Property name="text" type="java.lang.String" value="Add"/>
                       </Properties>
                       <Events>
-                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="addButtonManageBooksActionPerformed"/>
+                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="addBtnManageBooksActionPerformed"/>
                       </Events>
                     </Component>
-                    <Component class="javax.swing.JButton" name="editButtonManageBooks">
+                    <Component class="javax.swing.JButton" name="editBtnManageBooks">
                       <Properties>
                         <Property name="text" type="java.lang.String" value="Edit"/>
                       </Properties>
                       <Events>
-                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="editButtonManageBooksActionPerformed"/>
+                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="editBtnManageBooksActionPerformed"/>
                       </Events>
                     </Component>
-                    <Component class="javax.swing.JButton" name="deleteButtonManageBooks">
+                    <Component class="javax.swing.JButton" name="deleteBtnManageBooks">
                       <Properties>
                         <Property name="text" type="java.lang.String" value="Delete"/>
                       </Properties>
                       <Events>
-                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="deleteButtonManageBooksActionPerformed"/>
+                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="deleteBtnManageBooksActionPerformed"/>
                       </Events>
                     </Component>
                   </SubComponents>

@@ -18,16 +18,18 @@ public class MyBook {
     private String title;
     private ArrayList<String> authors;
     private String isbn;
+    private int year;
     private int copyNo;
     private Date date;
     private String status;
     
-    public MyBook(int bookId, String title, String author, String isbn, int copyNo, Date date, String status){
+    public MyBook(int bookId, String title, String author, String isbn, int year, int copyNo, Date date, String status){
         this.bookId = bookId;
         this.title = title;
         this.authors = new ArrayList<>();
         this.authors.add(author);
         this.isbn = isbn;
+        this.year = year;
         this.copyNo = copyNo;
         this.date = date;
         this.status = status;
@@ -54,7 +56,7 @@ public class MyBook {
     }
     
     public String[] toRow(){
-        String[] arr = new String[6];
+        String[] arr = new String[7];
         String authorList = "";
         
         Iterator iter = authors.iterator();
@@ -68,9 +70,10 @@ public class MyBook {
         arr[0] = title;
         arr[1] = authorList;
         arr[2] = isbn;
-        arr[3] = Integer.toString(copyNo);
-        arr[4] = date.toString();
-        arr[5] = status;
+        arr[3] = Integer.toString(year);
+        arr[4] = Integer.toString(copyNo);
+        arr[5] = date.toString();
+        arr[6] = status;
         
         return arr;
     }

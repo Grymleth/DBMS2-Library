@@ -116,7 +116,7 @@ public class SQLCore extends SQLDriver {
     public static ArrayList<SearchBook> getSearchBookView(){
         ArrayList<SearchBook> bookList = new ArrayList<>();
         
-        String statement = "SELECT b.title, a.author_name, b.isbn, b.copy_no, b.status, b.shelf_id "
+        String statement = "SELECT b.title, a.author_name, b.isbn, b.year_published, b.copy_no, b.status, b.shelf_id "
                 + "FROM books b, authors a, book_author ba "
                 + "WHERE b.isbn = ba.book_isbn AND a.author_id = ba.author_id";
         String isbn;
@@ -132,6 +132,7 @@ public class SQLCore extends SQLDriver {
                     bookObj = new SearchBook(res.getString("title"),
                                           res.getString("author_name"),
                                           isbn,
+                                          res.getInt("year_published"),
                                           res.getInt("shelf_id"));
                     bookList.add(bookObj);
                 }
@@ -172,7 +173,7 @@ public class SQLCore extends SQLDriver {
         ArrayList<MyBook> bookList = new ArrayList<>();
         String author;
         MyBook bookObj = null;
-        String statement = "SELECT b.book_id, b.title, a.author_name, b.isbn, b.copy_no, bt.transaction_date, b.status "
+        String statement = "SELECT b.book_id, b.title, a.author_name, b.isbn, b.year_published, b.copy_no, bt.transaction_date, b.status "
                 + "FROM books b, authors a, book_transactions bt, book_author ba, library_users u "
                 + "WHERE b.isbn = ba.book_isbn AND a.author_id = ba.author_id "
                 + "AND b.book_id = bt.book_id AND u.user_id = bt.user_id "
@@ -188,6 +189,7 @@ public class SQLCore extends SQLDriver {
                                 res.getString("title"),
                                 res.getString("author_name"),
                                 res.getString("isbn"),
+                                res.getInt("year_published"),
                                 res.getInt("copy_no"),
                                 res.getDate("transaction_date"),
                                 res.getString("status"));
@@ -206,6 +208,7 @@ public class SQLCore extends SQLDriver {
                                      res.getString("title"),
                                      res.getString("author_name"),
                                      res.getString("isbn"),
+                                     res.getInt("year_published"),
                                      res.getInt("copy_no"),
                                      res.getDate("transaction_date"),
                                      res.getString("status"));
@@ -396,6 +399,41 @@ public class SQLCore extends SQLDriver {
         }
         
         System.out.println("Success accept laon");
+    }
+    
+    public static void addBook(SearchBook book){
+        String statement = "{call add_book(?,?,?,?)}";
+        
+        try(Connection con = DriverManager.getConnection(CONNECTION_URL, USER, PASS);
+                CallableStatement query = con.prepareCall(statement);
+                ){
+            query.setString(1,book.getIsbn());
+            query.setString(2, book.getTitle());
+            query.setInt(3, book.getYear());
+            query.setInt(4, book.getShelfId());
+            query.execute();
+        }catch(SQLException ex){
+            System.out.println("Error adding book");
+            return;
+        }
+        
+        System.out.println("Success adding book");
+    }
+    
+    public static void deleteBook(String isbn){
+        String statement = "{call delete_book(?)}";
+        
+        try(Connection con = DriverManager.getConnection(CONNECTION_URL, USER, PASS);
+                CallableStatement query = con.prepareCall(statement);
+                ){
+            query.setString(1,isbn);
+            query.execute();
+        }catch(SQLException ex){
+            System.out.println("Error Deleting book");
+            return;
+        }
+        
+        System.out.println("Success deleting book");
     }
 }
     

@@ -16,17 +16,31 @@ public class SearchBook {
     private String title;
     private ArrayList<String> authors;
     private String isbn;
+    private int year;
     private int copies;
     private int onShelf;
     private int onLoan;
     private int onHold;
     private int shelfid;
     
-    public SearchBook(String title, String author, String isbn, int shelfid){
+    public SearchBook(String title, String author, String isbn, int year ,int shelfid){
         this.title = title;
         this.authors = new ArrayList<>();
         this.authors.add(author);
         this.isbn = isbn;
+        this.year=year;
+        this.copies = 1;
+        this.onShelf = 0;
+        this.onLoan = 0;
+        this.onHold = 0;
+        this.shelfid = shelfid;
+    }
+    
+    public SearchBook(String title, String isbn, int year ,int shelfid){
+        this.title = title;
+        this.authors = new ArrayList<>();
+        this.isbn = isbn;
+        this.year=year;
         this.copies = 1;
         this.onShelf = 0;
         this.onLoan = 0;
@@ -37,6 +51,7 @@ public class SearchBook {
     @Override
     public String toString(){
         String authorList = "";
+        
         Iterator iter = authors.iterator();
         while(iter.hasNext()){
             authorList += iter.next();
@@ -57,7 +72,7 @@ public class SearchBook {
     }
     
     public String[] toRow(){
-        String[] arr = new String[8];
+        String[] arr = new String[9];
         String authorList = "";
         
         Iterator iter = authors.iterator();
@@ -71,11 +86,12 @@ public class SearchBook {
         arr[0] = title;
         arr[1] = authorList;
         arr[2] = isbn;
-        arr[3] = Integer.toString(copies);
-        arr[4] = Integer.toString(shelfid);
-        arr[5] = Integer.toString(onShelf);
-        arr[6] = Integer.toString(onLoan);
-        arr[7] = Integer.toString(onHold);
+        arr[3] = Integer.toString(year);
+        arr[4] = Integer.toString(copies);
+        arr[5] = Integer.toString(shelfid);
+        arr[6] = Integer.toString(onShelf);
+        arr[7] = Integer.toString(onLoan);
+        arr[8] = Integer.toString(onHold);
         
         return arr;
     }
@@ -102,6 +118,14 @@ public class SearchBook {
     
     public void setIsbn(String isbn){
         this.isbn = isbn;
+    }
+    
+    public int getYear(){
+        return this.year;
+    }
+    
+    public int getShelfId(){
+        return this.shelfid;
     }
     
     public int getCopies(){
