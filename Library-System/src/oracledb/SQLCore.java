@@ -1,4 +1,5 @@
 package oracledb;
+import customclass.BookCopy;
 import customclass.LibAuthor;
 import customclass.SearchBook;
 import customclass.SearchBookView;
@@ -8,6 +9,7 @@ import customclass.MyBook;
 import customclass.MyBookView;
 import customclass.PendingLoan;
 import customclass.PendingLoanView;
+import customclass.Shelf;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -336,6 +338,51 @@ public class SQLCore extends SQLDriver {
         return authorList;
     }
     
+    public static ArrayList<BookCopy> getBookCopies(String isbn){
+        ArrayList<BookCopy> bookList = new ArrayList<>();
+        String statement = "SELECT copy_no, status FROM books WHERE isbn = ?";
+        BookCopy copyObj;
+        
+        try (Connection con = DriverManager.getConnection(CONNECTION_URL, USER, PASS);
+                PreparedStatement query = con.prepareStatement(statement);) {
+            query.setString(1, isbn);
+            ResultSet res = query.executeQuery();
+            while(res.next()){
+                copyObj = new BookCopy(res.getInt("copy_no"), res.getString("status"));
+                bookList.add(copyObj);
+            }
+        } catch (SQLException ex) {
+            System.out.println(ex.getLocalizedMessage());
+            System.out.println("Error getCopyList");
+            return null;
+        }
+        
+        System.out.println("Success getCopyList");
+        return bookList;
+    }
+    
+    public static ArrayList<Shelf> getShelves(){
+        ArrayList<Shelf> shelfList = new ArrayList<>();
+        String statement = "SELECT shelf_id, capacity FROM shelves";
+        Shelf shelfObj;
+        
+        try (Connection con = DriverManager.getConnection(CONNECTION_URL, USER, PASS);
+                PreparedStatement query = con.prepareStatement(statement);) {
+            ResultSet res = query.executeQuery();
+            while(res.next()){
+                shelfObj = new Shelf(res.getInt("shelf_id"), res.getInt("capacity"));
+                shelfList.add(shelfObj);
+            }
+        } catch (SQLException ex) {
+            System.out.println(ex.getLocalizedMessage());
+            System.out.println("Error getShelves");
+            return null;
+        }
+        
+        System.out.println("Success getShelves");
+        return shelfList;
+    }
+    
     public static void borrowBook(LibUser user, SearchBook book){
         String statement = "{call borrow_book(?,?)}"; 
         try(Connection con = DriverManager.getConnection(CONNECTION_URL, USER, PASS);
@@ -354,8 +401,6 @@ public class SQLCore extends SQLDriver {
         
         System.out.println("Success borrowBook");
     }
-    
-    
     
     public static void returnBook(LibUser user, MyBook book){
         String statement = "{call return_book(?,?,?)}"; 
@@ -496,6 +541,43 @@ public class SQLCore extends SQLDriver {
         }
         
         System.out.println("Success dleteBookAuthor");
+    }
+    
+    public static void editBook(String isbn, String[] details){
+        String statement = "{call edit_book(?, ?,?,?,?)}";
+        
+        try(Connection con = DriverManager.getConnection(CONNECTION_URL, USER, PASS);
+                CallableStatement query = con.prepareCall(statement);
+                ){
+            query.setString(1, isbn);
+            query.setString(2,details[0]);
+            query.setString(3,details[1]);
+            query.setInt(4,Integer.parseInt(details[2]));
+            query.setInt(5,Integer.parseInt(details[3]));
+            query.execute();
+        }catch(SQLException ex){
+            System.out.println("Error editing book");
+            return;
+        }
+        
+        System.out.println("Success editing book");
+    }
+
+    public static void deleteCopy(String isbn, int copyNo) {
+        String statement = "call delete_copy(?,?)";
+        
+        try(Connection con = DriverManager.getConnection(CONNECTION_URL, USER, PASS);
+                CallableStatement query = con.prepareCall(statement);
+                ){
+            query.setString(1, isbn);
+            query.setInt(2,copyNo);
+            query.execute();
+        }catch(SQLException ex){
+            System.out.println("Error deleting copy");
+            return;
+        }
+        
+        System.out.println("Success editing copy");
     }
 }
     

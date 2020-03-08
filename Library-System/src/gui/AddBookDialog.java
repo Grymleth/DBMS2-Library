@@ -23,6 +23,8 @@ public class AddBookDialog extends javax.swing.JDialog {
     public AddBookDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+        this.setLocationRelativeTo(null);
+        this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
     }
 
     /**
@@ -51,6 +53,7 @@ public class AddBookDialog extends javax.swing.JDialog {
         titleLbl = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setUndecorated(true);
 
         bookTitleLbl.setBackground(new java.awt.Color(196, 229, 56));
 

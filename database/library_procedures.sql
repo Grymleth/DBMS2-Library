@@ -116,7 +116,7 @@ BEGIN
     );
 
 END add_author;
-
+/
 CREATE OR REPLACE PROCEDURE borrow_book (
     p_userid     library_users.user_id%TYPE,
     p_isbn     books.isbn%TYPE
@@ -129,7 +129,8 @@ CREATE OR REPLACE PROCEDURE borrow_book (
         books
     WHERE
         isbn = p_isbn
-        AND status = 'On Shelf';
+        AND status = 'On Shelf'
+    ORDER BY copy_no;
 
 BEGIN
     OPEN c_book;
@@ -283,3 +284,67 @@ BEGIN
     DELETE FROM book_author
     WHERE author_id = p_authorid AND book_isbn = p_isbn;
 END delete_book_author;
+
+/
+
+CREATE OR REPLACE PROCEDURE edit_book(
+    p_oldisbn   books.isbn%type,
+    p_isbn      books.isbn%TYPE,
+    p_title     books.title%TYPE,
+    p_year      books.year_published%TYPE,
+    p_shelfid   books.shelf_id%TYPE)
+AS
+BEGIN
+    UPDATE books
+    SET isbn = p_isbn,
+        title = p_title,
+        year_published = p_year,
+        shelf_id = p_shelfid
+    WHERE isbn = p_oldisbn;
+END edit_book;
+    
+/
+
+CREATE OR REPLACE PROCEDURE delete_copy(
+    p_isbn books.isbn%type,
+    p_copyno books.copy_no%type
+)
+IS
+BEGIN
+    DELETE FROM books
+    WHERE isbn = p_isbn AND copy_no = p_copyno;
+END delete_copy;
+
+/
+
+CREATE OR REPLACE PROCEDURE add_shelf(
+    p_capacity shelves.capacity%type
+)
+IS
+BEGIN
+    INSERT INTO shelves(shelf_id, capacity) VALUES(shelf_seq.NEXTVAL, p_capacity);
+END add_shelf;
+
+/
+
+CREATE OR REPLACE PROCEDURE edit_shelf(
+    p_id shelves.shelf_id%type,
+    p_capacity shelves.capacity%type
+)
+IS
+BEGIN  
+    UPDATE shelves
+    SET capacity = p_capacity
+    WHERE shelf_id = p_id;
+END edit_shelf;
+
+/
+
+CREATE OR REPLACE PROCEDURE delete_shelf(
+    p_id shelves.shelf_id%type
+)
+IS
+BEGIN
+    DELETE FROM shelves
+    WHERE shelf_id = p_id;
+END delete_shelf;

@@ -18,8 +18,7 @@ CREATE SEQUENCE book_seq
     INCREMENT BY 1
     MINVALUE 0;
     
-    
-DROP SEQUENCE author_seq;
-DROP SEQUENCE user_seq;
-drop sequence book_transaction_seq;
-drop sequence book_seq;
+CREATE SEQUENCE shelf_seq
+    START WITH 0
+    INCREMENT BY 1
+    MINVALUE 0;

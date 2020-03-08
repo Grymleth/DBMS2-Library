@@ -102,6 +102,12 @@ public class MyBook {
         return isbn;
     }
     
+    public int getYear(){
+        return year;
+    }
+    
+    
+    
     public void setIsbn(String isbn){
         this.isbn = isbn;
     }
