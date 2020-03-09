@@ -688,16 +688,17 @@ public class SQLCore extends SQLDriver {
         return false;
     }
     
-    public static int computeFine(int userId, Date returned){
-        String statement = "{?=call isbn_exists(?)}";
+    public static int computeFine(int userId, Date borrowed){
+        String statement = "{?=call compute_fine(?)}";
         int fine;
         try(Connection con = DriverManager.getConnection(CONNECTION_URL, USER, PASS);
                 CallableStatement query = con.prepareCall(statement);
                 ){
             query.registerOutParameter(1, Types.NUMERIC);
-            query.setDate(2,returned);
+            query.setDate(2,borrowed);
             query.execute();
             fine = query.getInt(1);
+            System.out.println("fine at query: "+fine);
         }catch(SQLException ex){
             System.out.println(ex.getLocalizedMessage());
             System.out.println("Error computeFine ");
@@ -710,7 +711,9 @@ public class SQLCore extends SQLDriver {
                 CallableStatement query = con.prepareCall(statement);
                 ){
             query.setInt(1, userId);
-            query.setInt(2, fine);
+            query.setInt(2, fine); 
+            System.out.println("User id: "+userId);
+            System.out.println("fine: "+ fine);
             
             query.execute();
         
@@ -720,7 +723,53 @@ public class SQLCore extends SQLDriver {
             return 0;
         }
         System.out.println("success insert fine");
+        
+        if(fine < 0){
+            return 0;
+        }
+        
         return fine;
     }
+    
+    public static void payFine(int userId){
+        String statement = "SELECT unpaid_fines FROM library_users WHERE user_id = ?";
+        int fine = 0;
+        try(Connection con = DriverManager.getConnection(CONNECTION_URL, USER, PASS);
+                PreparedStatement query = con.prepareStatement(statement);
+                ){
+            query.setInt(1, userId);
+            
+            ResultSet res = query.executeQuery();
+            
+            while(res.next()){
+                fine = res.getInt("unpaid_fines");
+            }
+            
+            System.out.println("fine:"+fine);
+             
+        }catch(SQLException ex){
+            System.out.println(ex.getLocalizedMessage());
+            System.out.println("Error query fine ");
+            return;
+        }
+        System.out.println("success query fine");
+        statement = "{call add_fine(?,?)}";
+        
+        try(Connection con = DriverManager.getConnection(CONNECTION_URL, USER, PASS);
+                CallableStatement query = con.prepareCall(statement);
+                ){
+            query.setInt(1, userId);
+            query.setInt(2, -fine);
+           
+            query.execute();
+        }catch(SQLException ex){
+            System.out.println(ex.getLocalizedMessage());
+            System.out.println("Error pay fine ");
+            return;
+        }
+        
+        System.out.println("success pay fine");
+    }
+    
 }
     

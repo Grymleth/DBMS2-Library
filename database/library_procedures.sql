@@ -418,10 +418,21 @@ IS
     v_fine library_users.unpaid_fines%type;
     v_duration NUMBER(6,0);
 BEGIN
-    v_duration := TO_NUMBER(SYSDATE - TO_DATE(p_date));
+    v_duration := TO_NUMBER(SYSDATE - TO_DATE(p_date)) - 7;
     v_fine := v_duration * 20;
     
     RETURN v_fine;
 END compute_fine;
     
 /
+
+CREATE OR REPLACE PROCEDURE add_fine(
+    p_userid library_users.user_id%type,
+    p_fine library_users.unpaid_fines%type)
+IS
+BEGIN
+    UPDATE library_users
+    SET unpaid_fines = unpaid_fines + p_fine
+    WHERE user_id = p_userid;
+    
+END;

@@ -4,6 +4,7 @@ package gui;
 import customclass.SearchBook;
 import customclass.SearchBookView;
 import customclass.LibUser;
+import customclass.LibUserView;
 import customclass.MyBook;
 import customclass.MyBookView;
 import java.awt.CardLayout;
@@ -25,6 +26,7 @@ import oracledb.SQLCore;
  */
 public class PatronFrame extends javax.swing.JFrame {
     private LibUser user;
+    private LibUserView userList;
     private SearchBookView searchBookList;
     private MyBookView myBookList;
     
@@ -47,7 +49,6 @@ public class PatronFrame extends javax.swing.JFrame {
         System.out.println("awit");
         System.out.println(user);
         this.user = user;
-        
         greetingNameLbl.setText(user.fName);
         refreshTables();
     }
@@ -67,16 +68,13 @@ public class PatronFrame extends javax.swing.JFrame {
         sidePane = new javax.swing.JPanel();
         myBooksBtn = new javax.swing.JButton();
         searchBooksBtn = new javax.swing.JButton();
-        aboutBtn = new javax.swing.JButton();
         logoutBtn = new javax.swing.JButton();
         greetingLbl = new javax.swing.JLabel();
         greetingNameLbl = new javax.swing.JLabel();
+        fineLbl = new javax.swing.JButton();
+        fineText = new javax.swing.JButton();
+        payFineBtn = new javax.swing.JButton();
         panelCards = new javax.swing.JPanel();
-        myBooksPanelCard = new javax.swing.JPanel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        myBooksTable = new javax.swing.JTable();
-        jLabel2 = new javax.swing.JLabel();
-        returnBtn = new javax.swing.JButton();
         searchBooksPanelCard = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         searchBooksTable = new javax.swing.JTable();
@@ -88,6 +86,11 @@ public class PatronFrame extends javax.swing.JFrame {
         borrowBtn = new javax.swing.JButton();
         historyPanelCard = new javax.swing.JPanel();
         jSpinner1 = new javax.swing.JSpinner();
+        myBooksPanelCard = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        myBooksTable = new javax.swing.JTable();
+        jLabel2 = new javax.swing.JLabel();
+        returnBtn = new javax.swing.JButton();
 
         jLabel8.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jLabel8.setForeground(new java.awt.Color(255, 255, 255));
@@ -121,17 +124,6 @@ public class PatronFrame extends javax.swing.JFrame {
             }
         });
 
-        aboutBtn.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
-        aboutBtn.setForeground(new java.awt.Color(255, 255, 255));
-        aboutBtn.setText("About");
-        aboutBtn.setBorderPainted(false);
-        aboutBtn.setContentAreaFilled(false);
-        aboutBtn.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                aboutBtnActionPerformed(evt);
-            }
-        });
-
         logoutBtn.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
         logoutBtn.setForeground(new java.awt.Color(255, 255, 255));
         logoutBtn.setText("Logout");
@@ -152,6 +144,35 @@ public class PatronFrame extends javax.swing.JFrame {
         greetingNameLbl.setText("Librarian!");
         greetingNameLbl.setAlignmentX(0.5F);
 
+        fineLbl.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
+        fineLbl.setForeground(new java.awt.Color(255, 255, 255));
+        fineLbl.setText("Unpaid Fines:");
+        fineLbl.setBorderPainted(false);
+        fineLbl.setContentAreaFilled(false);
+        fineLbl.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                fineLblActionPerformed(evt);
+            }
+        });
+
+        fineText.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
+        fineText.setForeground(new java.awt.Color(255, 255, 255));
+        fineText.setText("$20.00");
+        fineText.setBorderPainted(false);
+        fineText.setContentAreaFilled(false);
+        fineText.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                fineTextActionPerformed(evt);
+            }
+        });
+
+        payFineBtn.setText("Pay Fine");
+        payFineBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                payFineBtnActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout sidePaneLayout = new javax.swing.GroupLayout(sidePane);
         sidePane.setLayout(sidePaneLayout);
         sidePaneLayout.setHorizontalGroup(
@@ -159,22 +180,28 @@ public class PatronFrame extends javax.swing.JFrame {
             .addGroup(sidePaneLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(sidePaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(sidePaneLayout.createSequentialGroup()
-                        .addGap(0, 7, Short.MAX_VALUE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, sidePaneLayout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
                         .addGroup(sidePaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, sidePaneLayout.createSequentialGroup()
-                                .addGroup(sidePaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(myBooksBtn)
-                                    .addComponent(searchBooksBtn)
-                                    .addComponent(aboutBtn))
-                                .addGap(25, 25, 25))
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, sidePaneLayout.createSequentialGroup()
                                 .addComponent(logoutBtn)
-                                .addContainerGap())))
+                                .addContainerGap())
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, sidePaneLayout.createSequentialGroup()
+                                .addComponent(fineLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addContainerGap())
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, sidePaneLayout.createSequentialGroup()
+                                .addComponent(payFineBtn)
+                                .addGap(37, 37, 37))))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, sidePaneLayout.createSequentialGroup()
                         .addGroup(sidePaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(fineText, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(greetingNameLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(greetingLbl, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(greetingLbl, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, sidePaneLayout.createSequentialGroup()
+                                .addGap(0, 0, Short.MAX_VALUE)
+                                .addGroup(sidePaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(myBooksBtn, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(searchBooksBtn, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE))))
                         .addContainerGap())))
         );
         sidePaneLayout.setVerticalGroup(
@@ -184,9 +211,13 @@ public class PatronFrame extends javax.swing.JFrame {
                 .addComponent(myBooksBtn)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(searchBooksBtn)
+                .addGap(37, 37, 37)
+                .addComponent(fineLbl)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(aboutBtn)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 264, Short.MAX_VALUE)
+                .addComponent(fineText)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(payFineBtn)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 170, Short.MAX_VALUE)
                 .addComponent(greetingLbl)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(greetingNameLbl)
@@ -202,77 +233,6 @@ public class PatronFrame extends javax.swing.JFrame {
 
         panelCards.setBackground(new java.awt.Color(196, 229, 56));
         panelCards.setLayout(new java.awt.CardLayout());
-
-        myBooksPanelCard.setBackground(new java.awt.Color(196, 229, 56));
-
-        myBooksTable.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] {
-                "Title", "Author", "ISBN", "Date Borrowed"
-            }
-        ) {
-            boolean[] canEdit = new boolean [] {
-                false, false, false, false
-            };
-
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
-        });
-        myBooksTable.getTableHeader().setReorderingAllowed(false);
-        jScrollPane1.setViewportView(myBooksTable);
-        if (myBooksTable.getColumnModel().getColumnCount() > 0) {
-            myBooksTable.getColumnModel().getColumn(0).setResizable(false);
-            myBooksTable.getColumnModel().getColumn(1).setResizable(false);
-            myBooksTable.getColumnModel().getColumn(2).setResizable(false);
-            myBooksTable.getColumnModel().getColumn(3).setResizable(false);
-        }
-
-        jLabel2.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
-        jLabel2.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel2.setText("My Books");
-
-        returnBtn.setText("Return Book");
-        returnBtn.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                returnBtnActionPerformed(evt);
-            }
-        });
-
-        javax.swing.GroupLayout myBooksPanelCardLayout = new javax.swing.GroupLayout(myBooksPanelCard);
-        myBooksPanelCard.setLayout(myBooksPanelCardLayout);
-        myBooksPanelCardLayout.setHorizontalGroup(
-            myBooksPanelCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(myBooksPanelCardLayout.createSequentialGroup()
-                .addGroup(myBooksPanelCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(returnBtn)
-                    .addGroup(myBooksPanelCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(myBooksPanelCardLayout.createSequentialGroup()
-                            .addGap(106, 106, 106)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 716, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGroup(myBooksPanelCardLayout.createSequentialGroup()
-                            .addGap(406, 406, 406)
-                            .addComponent(jLabel2))))
-                .addContainerGap(118, Short.MAX_VALUE))
-        );
-        myBooksPanelCardLayout.setVerticalGroup(
-            myBooksPanelCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, myBooksPanelCardLayout.createSequentialGroup()
-                .addContainerGap(39, Short.MAX_VALUE)
-                .addComponent(jLabel2)
-                .addGap(27, 27, 27)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(returnBtn)
-                .addGap(17, 17, 17))
-        );
-
-        panelCards.add(myBooksPanelCard, "myBooksCard");
 
         searchBooksPanelCard.setBackground(new java.awt.Color(196, 229, 56));
 
@@ -361,7 +321,7 @@ public class PatronFrame extends javax.swing.JFrame {
                             .addComponent(jButton7))
                         .addComponent(jLabel3)
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 865, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(51, Short.MAX_VALUE))
+                .addContainerGap(58, Short.MAX_VALUE))
         );
         searchBooksPanelCardLayout.setVerticalGroup(
             searchBooksPanelCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -390,7 +350,7 @@ public class PatronFrame extends javax.swing.JFrame {
         historyPanelCardLayout.setHorizontalGroup(
             historyPanelCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, historyPanelCardLayout.createSequentialGroup()
-                .addContainerGap(509, Short.MAX_VALUE)
+                .addContainerGap(516, Short.MAX_VALUE)
                 .addComponent(jSpinner1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(401, 401, 401))
         );
@@ -403,6 +363,77 @@ public class PatronFrame extends javax.swing.JFrame {
         );
 
         panelCards.add(historyPanelCard, "historyCard");
+
+        myBooksPanelCard.setBackground(new java.awt.Color(196, 229, 56));
+
+        myBooksTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title", "Author", "ISBN", "Date Borrowed"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        myBooksTable.getTableHeader().setReorderingAllowed(false);
+        jScrollPane1.setViewportView(myBooksTable);
+        if (myBooksTable.getColumnModel().getColumnCount() > 0) {
+            myBooksTable.getColumnModel().getColumn(0).setResizable(false);
+            myBooksTable.getColumnModel().getColumn(1).setResizable(false);
+            myBooksTable.getColumnModel().getColumn(2).setResizable(false);
+            myBooksTable.getColumnModel().getColumn(3).setResizable(false);
+        }
+
+        jLabel2.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
+        jLabel2.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel2.setText("My Books");
+
+        returnBtn.setText("Return Book");
+        returnBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                returnBtnActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout myBooksPanelCardLayout = new javax.swing.GroupLayout(myBooksPanelCard);
+        myBooksPanelCard.setLayout(myBooksPanelCardLayout);
+        myBooksPanelCardLayout.setHorizontalGroup(
+            myBooksPanelCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(myBooksPanelCardLayout.createSequentialGroup()
+                .addGroup(myBooksPanelCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(returnBtn)
+                    .addGroup(myBooksPanelCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(myBooksPanelCardLayout.createSequentialGroup()
+                            .addGap(106, 106, 106)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 716, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(myBooksPanelCardLayout.createSequentialGroup()
+                            .addGap(406, 406, 406)
+                            .addComponent(jLabel2))))
+                .addContainerGap(125, Short.MAX_VALUE))
+        );
+        myBooksPanelCardLayout.setVerticalGroup(
+            myBooksPanelCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, myBooksPanelCardLayout.createSequentialGroup()
+                .addContainerGap(41, Short.MAX_VALUE)
+                .addComponent(jLabel2)
+                .addGap(27, 27, 27)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(returnBtn)
+                .addGap(17, 17, 17))
+        );
+
+        panelCards.add(myBooksPanelCard, "myBooksCard");
 
         jSplitPane2.setRightComponent(panelCards);
 
@@ -421,21 +452,16 @@ public class PatronFrame extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 1129, Short.MAX_VALUE)
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(layout.createSequentialGroup()
-                    .addGap(0, 0, Short.MAX_VALUE)
-                    .addComponent(registerPane, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGap(0, 0, Short.MAX_VALUE)))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(registerPane, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 585, Short.MAX_VALUE)
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(layout.createSequentialGroup()
-                    .addGap(0, 0, Short.MAX_VALUE)
-                    .addComponent(registerPane, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGap(0, 0, Short.MAX_VALUE)))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(registerPane, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
 
         pack();
@@ -444,10 +470,6 @@ public class PatronFrame extends javax.swing.JFrame {
     private void myBooksBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_myBooksBtnActionPerformed
        cardLayout.show(panelCards,"myBooksCard");
     }//GEN-LAST:event_myBooksBtnActionPerformed
-
-    private void aboutBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aboutBtnActionPerformed
-        cardLayout.show(panelCards,"historyCard");
-    }//GEN-LAST:event_aboutBtnActionPerformed
 
     private void searchBooksBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchBooksBtnActionPerformed
         cardLayout.show(panelCards,"searchBooksCard");
@@ -476,15 +498,18 @@ public class PatronFrame extends javax.swing.JFrame {
                 "Are you sure you want to return this book?",
                 "Confirm", 
                 JOptionPane.YES_NO_OPTION);
-        if(choice == JOptionPane.YES_OPTION){
-            SQLCore.returnBook(user, selectedBook);
-            JOptionPane.showMessageDialog(this, 
-                    "You have successfully returned " + selectedBook.getTitle(), 
-                    "Success", 
-                    JOptionPane.INFORMATION_MESSAGE);
-            
-            refreshTables();
+        if(choice == JOptionPane.NO_OPTION){
+            return;
         }
+        
+        SQLCore.returnBook(user, selectedBook);
+        JOptionPane.showMessageDialog(this, 
+                "You have successfully returned " + selectedBook.getTitle(), 
+                "Success", 
+                JOptionPane.INFORMATION_MESSAGE);
+        
+        SQLCore.computeFine(user.userId, selectedBook.getDate());
+        refreshTables();
     }//GEN-LAST:event_returnBtnActionPerformed
 
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
@@ -527,6 +552,38 @@ public class PatronFrame extends javax.swing.JFrame {
         
         
     }//GEN-LAST:event_borrowBtnActionPerformed
+
+    private void fineLblActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fineLblActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_fineLblActionPerformed
+
+    private void fineTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fineTextActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_fineTextActionPerformed
+
+    private void payFineBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_payFineBtnActionPerformed
+        if(user.fines == 0){
+            JOptionPane.showMessageDialog(this, 
+                    "You have no fines to due right now",
+                    "Invalid payment",
+                    JOptionPane.ERROR_MESSAGE);
+            
+            return;
+        }
+        
+        int choice = JOptionPane.showConfirmDialog(this, 
+                "Are you sure you want to pay the fine now?",
+                "Confirm", 
+                JOptionPane.YES_NO_OPTION);
+        if(choice == JOptionPane.NO_OPTION){
+            return;
+        }
+        
+        
+        
+        SQLCore.payFine(user.userId);
+        refreshTables();
+    }//GEN-LAST:event_payFineBtnActionPerformed
     
     public void refreshTables(){
         initTableModels();
@@ -568,6 +625,11 @@ public class PatronFrame extends javax.swing.JFrame {
             }
         }
         
+        userList = new LibUserView();
+        userList.fill();
+        user = userList.findUserByLoginId(user.loginid);
+        
+        fineText.setText("$"+user.fines+".00");
     }
     
     /**
@@ -614,8 +676,9 @@ public class PatronFrame extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton aboutBtn;
     private javax.swing.JButton borrowBtn;
+    private javax.swing.JButton fineLbl;
+    private javax.swing.JButton fineText;
     private javax.swing.JLabel greetingLbl;
     private javax.swing.JLabel greetingNameLbl;
     private javax.swing.JPanel historyPanelCard;
@@ -635,6 +698,7 @@ public class PatronFrame extends javax.swing.JFrame {
     private javax.swing.JPanel myBooksPanelCard;
     private javax.swing.JTable myBooksTable;
     private javax.swing.JPanel panelCards;
+    private javax.swing.JButton payFineBtn;
     private javax.swing.JPanel registerPane;
     private javax.swing.JButton returnBtn;
     private javax.swing.JButton searchBooksBtn;
